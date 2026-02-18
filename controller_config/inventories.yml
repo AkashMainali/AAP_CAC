@@ -1,0 +1,6 @@
+---
+controller_inventories:
+  - name: "CAC inv"
+    description: "Sample inventory created via CaC"
+    organization: "RHEL Environment"
+

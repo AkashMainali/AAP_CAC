@@ -1,0 +1,52 @@
+---
+- name: Create organizations
+  ansible.builtin.uri:
+    url: "{{ api_base }}/organizations/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      description: "{{ item.description | default('') }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_organizations | default([]) }}"
+
+- name: Create teams
+  ansible.builtin.uri:
+    url: "{{ api_base }}/teams/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      description: "{{ item.description | default('') }}"
+      organization: "{{ item.organization }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_teams | default([]) }}"
+
+- name: Create users
+  ansible.builtin.uri:
+    url: "{{ api_base }}/users/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      username: "{{ item.username }}"
+      email: "{{ item.email }}"
+      password: "{{ item.password }}"
+      first_name: "{{ item.first_name | default('') }}"
+      last_name: "{{ item.last_name | default('') }}"
+      is_superuser: "{{ item.is_superuser | default(false) }}"
+      is_system_auditor: "{{ item.is_system_auditor | default(false) }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_users | default([]) }}"
+

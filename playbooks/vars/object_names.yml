@@ -1,0 +1,5 @@
+---
+rhel_org_name: "RHEL Environment"
+project_name: "CAC Demo Project"
+inventory_name: "CAC inv"
+

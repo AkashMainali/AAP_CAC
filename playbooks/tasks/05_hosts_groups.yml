@@ -1,0 +1,31 @@
+---
+- name: Create inventory hosts
+  ansible.builtin.uri:
+    url: "{{ api_base }}/inventories/{{ inventory_id }}/hosts/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      variables: "{{ item.variables | default({}) }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_hosts | default([]) }}"
+
+- name: Create inventory groups
+  ansible.builtin.uri:
+    url: "{{ api_base }}/inventories/{{ inventory_id }}/groups/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      variables: "{{ item.variables | default({}) }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_inventory_groups | default([]) }}"
+

@@ -1,0 +1,19 @@
+---
+controller_job_templates:
+  - name: "CAC JT 1"
+    description: "First sample job template"
+    organization: "RHEL Environment"
+    inventory: "CAC inv"
+    project: "CAC Demo Project"
+    playbook: "site.yml"
+    job_type: "run"
+    verbosity: 0
+  - name: "CAC JT 2" 
+    description: "Second sample job template"
+    organization: "RHEL Environment"
+    inventory: "CAC inv"
+    project: "CAC Demo Project"
+    playbook: "ping.yml"
+    job_type: "run"
+    verbosity: 1
+

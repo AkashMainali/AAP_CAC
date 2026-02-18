@@ -1,0 +1,38 @@
+---
+- name: Create job templates
+  ansible.builtin.uri:
+    url: "{{ api_base }}/job_templates/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      description: "{{ item.description | default('') }}"
+      organization: "{{ rhel_org_id }}"
+      inventory: "{{ inventory_id }}"
+      project: "{{ project_id }}"
+      playbook: "{{ item.playbook | default('site.yml') }}"
+      job_type: "run"
+      verbosity: "{{ item.verbosity | default(0) }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_job_templates | default([]) }}"
+
+- name: Create workflow job templates
+  ansible.builtin.uri:
+    url: "{{ api_base }}/workflow_job_templates/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      description: "{{ item.description | default('') }}"
+      organization: "{{ rhel_org_id }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_workflow_job_templates | default([]) }}"
+

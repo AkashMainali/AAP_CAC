@@ -1,0 +1,6 @@
+---
+controller_workflow_job_templates:
+  - name: "CAC Workflow"
+    description: "Sample workflow connecting JT1 -> JT2"
+    organization: "RHEL Environment"
+

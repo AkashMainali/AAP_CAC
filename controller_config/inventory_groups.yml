@@ -1,0 +1,7 @@
+---
+controller_inventory_groups:
+  - name: "CAC inventory group"
+    inventory: "CAC inv"
+    variables:
+      group_env: "demo"
+

@@ -1,0 +1,54 @@
+---
+- name: Create credentials
+  ansible.builtin.uri:
+    url: "{{ api_base }}/credentials/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      description: "{{ item.description | default('') }}"
+      organization: "{{ rhel_org_id }}"
+      credential_type: "{{ item.credential_type | default(1) }}"
+      inputs: "{{ item.inputs | default({}) }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_credentials | default([]) }}"
+
+- name: Create projects
+  ansible.builtin.uri:
+    url: "{{ api_base }}/projects/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      description: "{{ item.description | default('') }}"
+      organization: "{{ rhel_org_id }}"
+      scm_type: "{{ item.scm_type }}"
+      scm_url: "{{ item.scm_url }}"
+      scm_branch: "{{ item.scm_branch | default('main') }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_projects | default([]) }}"
+
+- name: Create inventories
+  ansible.builtin.uri:
+    url: "{{ api_base }}/inventories/"
+    method: POST
+    status_code: [200, 201, 202, 400]
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      description: "{{ item.description | default('') }}"
+      organization: "{{ rhel_org_id }}"
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  loop: "{{ controller_inventories | default([]) }}"
+

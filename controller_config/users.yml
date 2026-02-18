@@ -1,0 +1,17 @@
+---
+controller_users:
+  - username: "akash"
+    email: "akash@example.com"
+    password: "redhat"
+    first_name: "Akash"
+    last_name: "Admin"
+    is_superuser: true
+    is_system_auditor: false
+  - username: "martin" 
+    email: "martin@example.com"
+    password: "redhat"
+    first_name: "Martin"
+    last_name: "Admin"
+    is_superuser: true
+    is_system_auditor: false
+

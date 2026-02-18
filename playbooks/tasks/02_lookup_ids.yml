@@ -1,0 +1,40 @@
+---
+- name: Get RHEL Environment ID
+  ansible.builtin.uri:
+    url: "{{ api_base }}/organizations/?name={{ rhel_org_name | urlencode }}"
+    method: GET
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  register: rhel_org_lookup
+
+- name: Extract RHEL org ID
+  ansible.builtin.set_fact:
+    rhel_org_id: "{{ (rhel_org_lookup.json.results | default([]) | first).id | default('') }}"
+
+- name: Get project ID
+  ansible.builtin.uri:
+    url: "{{ api_base }}/projects/?name={{ project_name | urlencode }}&organization={{ rhel_org_id }}"
+    method: GET
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  register: project_lookup
+
+- name: Get inventory ID
+  ansible.builtin.uri:
+    url: "{{ api_base }}/inventories/?name={{ inventory_name | urlencode }}&organization={{ rhel_org_id }}"
+    method: GET
+    user: "{{ aap_username }}"
+    password: "{{ aap_password }}"
+    force_basic_auth: true
+    validate_certs: "{{ aap_validate_certs }}"
+  register: inventory_lookup
+
+- name: Extract IDs
+  ansible.builtin.set_fact:
+    project_id: "{{ (project_lookup.json.results | default([]) | first).id | default('') }}"
+    inventory_id: "{{ (inventory_lookup.json.results | default([]) | first).id | default('') }}"
+
