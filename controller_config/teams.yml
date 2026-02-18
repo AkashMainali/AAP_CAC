@@ -1,0 +1,15 @@
+---
+controller_teams:
+  - name: "RHEL-dev Team"
+    description: "Dev Team for RHEL"
+    organization: "RHEL Environment"
+  - name: "RHEL-admin Team"
+    description: "Admin Team for RHEL"
+    organization: "RHEL Environment"
+
+  - name: "Windows-dev Team"
+    description: "Dev Team for Windows"
+    organization: "Windows Environment"
+  - name: "Windows-admin Team"
+    description: "Admin Team for Windows"
+    organization: "Windows Environment"

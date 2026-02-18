@@ -1,0 +1,12 @@
+---
+controller_projects:
+  - name: "CAC Demo Project"
+    description: "Demo project from Git"
+    organization: "Demo Org"
+    scm_type: "git"
+    scm_url: "https://git.example.com/ansible/demo-project.git"
+    scm_branch: "main"
+    scm_update_on_launch: true
+    scm_clean: true
+    scm_delete_on_update: true
+

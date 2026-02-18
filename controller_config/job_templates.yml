@@ -1,0 +1,16 @@
+---
+controller_templates:
+  - name: "CAC Demo Ping"
+    description: "Ping demo-host1 from Demo Project"
+    organization: "Demo Org"
+    inventory: "Demo Inventory"
+    project: "Demo Project"
+    playbook: "site.yml"
+    job_type: "run"
+    verbosity: 0
+    limit: "demo-host1"
+    credentials:
+      - "Demo Machine Credential"
+    ask_limit_on_launch: false
+    ask_variables_on_launch: false
+

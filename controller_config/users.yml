@@ -1,0 +1,15 @@
+---
+controller_user_accounts:
+  - username: "akash"
+    password: "redhat"
+    first_name: "Akash"
+    last_name: "Mainali"
+    is_superuser: true
+    is_system_auditor: true
+  - username: "martin"
+    password: "redhat"
+    first_name: "Martin"
+    last_name: "Kpade`"
+    is_superuser: true
+    is_system_auditor: true
+

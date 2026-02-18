@@ -1,0 +1,6 @@
+---
+aap_hostname: "https://aap-gateway.apps.ocp419.crucible.iisl.com"
+aap_username: "admin"
+aap_password: "redhat"      # use Ansible Vault in real life
+aap_validate_certs: false
+

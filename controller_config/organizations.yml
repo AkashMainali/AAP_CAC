@@ -1,0 +1,7 @@
+---
+controller_organizations:
+  - name: "RHEL Environment"
+    description: "Organization created via config as code for RHEL System"
+  - name: "Windows Environment"
+    description: "Organization created via config as code for Windows System"
+

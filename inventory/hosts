@@ -1,0 +1,6 @@
+[local]
+localhost ansible_connection=local
+
+[controllers]
+aap-controller.crucible.iisl.com
+
