@@ -1,0 +1,13 @@
+---
+- name: Configure Projects AAP
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - ../env/aap_target.yml
+    - configs/projects.yml
+
+  tasks:
+    - name: Create Projects in Ansible Automation Platform
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

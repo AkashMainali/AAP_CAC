@@ -1,0 +1,12 @@
+---
+- name: Create Teams in Ansible Automation Platform
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../env/aap_target.yml
+    - configs/roles.yml
+
+  tasks:
+    - name: Ensure Roles are present in AAP 2.6
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

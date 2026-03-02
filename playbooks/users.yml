@@ -1,0 +1,13 @@
+---
+- name: Configure Users and Team Assignments in AAP
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - ../env/aap_target.yml
+    - configs/users.yml
+
+  tasks:
+    - name: Ensure Users are created and assigned to teams
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

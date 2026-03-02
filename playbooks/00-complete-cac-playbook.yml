@@ -1,0 +1,21 @@
+---
+- name: Configure Ansible Automation platform 2.6
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../env/aap_target.yml
+    - configs/00-vault.yml
+    - configs/01-organizations.yml
+    - configs/02-teams.yml
+    - configs/03-roles.yml
+    # - configs/04-ldap.yml
+    - configs/05-credentials.yml
+    - configs/06-projects.yml
+    - configs/07-inventory-hosts.yml
+    - configs/08-job-templates.yml
+    - configs/09-workflow-job-templates.yml
+
+  tasks:
+    - name: Role to dispatch configuration based on var files on config directory
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

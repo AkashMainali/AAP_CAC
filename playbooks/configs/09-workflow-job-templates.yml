@@ -1,0 +1,56 @@
+---
+controller_workflows:
+  # ==========================================
+  # RHEL COMPLETE PING WORKFLOW
+  # ==========================================
+  - name: "RHEL-Complete-Ping-Workflow"
+    organization: "RHEL"
+    description: "Sequential ping from Dev to Prod"
+    schema:
+      - name: "Ping Dev"
+        unified_job_template: "RHEL-Ping-Dev"
+        extra_data:
+          ping_reason: "Workflow Sequential Run"
+        success_nodes:
+          - "Ping Test"
+
+      - name: "Ping Test"
+        unified_job_template: "RHEL-Ping-Test"
+        extra_data:
+          ticket_id: "WF-12345"
+        success_nodes:
+          - "Ping Prod"
+
+      - name: "Ping Prod"
+        unified_job_template: "RHEL-Ping-Prod"
+        extra_data:
+          cr_number: "CR-999"
+
+  # ==========================================
+  # WINDOWS COMPLETE PING WORKFLOW
+  # ==========================================
+  - name: "Windows-Complete-Ping-Workflow"
+    organization: "Windows"
+    description: "Sequential Windows health check"
+    schema:
+      - name: "Win Dev"
+        unified_job_template: "Windows-Ping-Dev"
+        success_nodes:
+          - "Win Test"
+
+      - name: "Win Test"
+        unified_job_template: "Windows-Ping-Test"
+        success_nodes:
+          - "Win Prod"
+
+      - name: "Win Prod"
+        unified_job_template: "Windows-Ping-Prod"
+
+controller_roles:
+  # Assign Execute permissions so Operators can run the workflows
+  - team: "RHEL-Operator"
+    workflow_job_template: "RHEL-Complete-Ping-Workflow"
+    role: "execute"
+  - team: "Windows-Operator"
+    workflow_job_template: "Windows-Complete-Ping-Workflow"
+    role: "execute"

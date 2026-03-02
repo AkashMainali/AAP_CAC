@@ -1,0 +1,34 @@
+---
+controller_inventories:
+  - name: "RHEL Inventory"
+    organization: "RHEL"
+    description: "Inventory for RHEL 10 Managed Nodes"
+    variables:
+      ansible_python_interpreter: /usr/bin/python3
+
+  - name: "Windows Inventory"
+    organization: "Windows"
+    description: "Inventory for Windows Managed Nodes"
+
+controller_hosts:
+  # RHEL Hosts
+  - name: "rhel-node-01.example.com"
+    inventory: "RHEL Inventory"
+    variables:
+      ansible_host: "10.0.1.50"
+
+  # Windows Hosts
+  - name: "win-node-01.example.com"
+    inventory: "Windows Inventory"
+    variables:
+      ansible_host: "10.0.2.50"
+      ansible_connection: winrm
+      ansible_winrm_server_cert_validation: ignore
+
+controller_roles:
+  - team: "RHEL-admin"
+    inventory: "RHEL Inventory"
+    role: "admin"
+  - team: "Windows-Admin"
+    inventory: "Windows Inventory"
+    role: "admin"

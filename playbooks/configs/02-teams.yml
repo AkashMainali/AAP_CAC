@@ -1,0 +1,17 @@
+---
+aap_teams:
+  - name: "RHEL-admin"
+    description: "Administrators for RHEL Systems"
+    organization: "RHEL"
+
+  - name: "RHEL-Operator"
+    description: "Operators for RHEL Systems"
+    organization: "RHEL"
+
+  - name: "Windows-Admin"
+    description: "Administrators for Windows Systems"
+    organization: "Windows"
+
+  - name: "Windows-Operator"
+    description: "Operators for Windows Systems"
+    organization: "Windows"

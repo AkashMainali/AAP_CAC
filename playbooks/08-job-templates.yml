@@ -1,0 +1,13 @@
+---
+- name: Finalize AAP Configuration with Job Templates
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - ../env/aap_target.yml
+    - configs/templates.yml
+
+  tasks:
+    - name: Create Job Templates and Assign Execute Permissions
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

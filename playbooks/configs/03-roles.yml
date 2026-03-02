@@ -1,0 +1,76 @@
+# ---
+# controller_roles:
+#   # RHEL Organization Admin assignment
+#   - team: "RHEL-admin"
+#     target_organization: "RHEL"
+#     role: "admin"
+#     # Explicitly set the target to the organization itself
+#     # rather than an object within the organization.
+
+
+#   # RHEL Organization Operator (Auditor worked for you, keep it!)
+#   - team: "RHEL-Operator"
+#     organization: "RHEL"
+#     role: "auditor"
+
+#   # Windows Organization Admin assignment
+#   - team: "Windows-Admin"
+#     target_organization: "Windows"
+#     role: "admin"
+
+
+#   # Windows Organization Operator
+#   - team: "Windows-Operator"
+#     organization: "Windows"
+#     role: "auditor"
+---
+controller_roles:
+  # ==========================================
+  # RHEL ORGANIZATION ADMIN ROLES
+  # ==========================================
+  - team: "RHEL-admin"
+    organization: "RHEL"
+    role: "project_admin"  # Execution: Project Admin
+
+  - team: "RHEL-admin"
+    organization: "RHEL"
+    role: "inventory_admin"  # Execution: Inventory Admin
+
+  - team: "RHEL-admin"
+    organization: "RHEL"
+    role: "credential_admin"  # Execution: Credential Admin
+
+  - team: "RHEL-admin"
+    organization: "RHEL"
+    role: "workflow_admin"  # Execution: Workflow Admin
+
+  - team: "RHEL-admin"
+    organization: "RHEL"
+    role: "notification_admin"  # Execution: Notification Admin
+
+  # ==========================================
+  # WINDOWS ORGANIZATION ADMIN ROLES
+  # ==========================================
+
+  - team: "Windows-Admin"
+    organization: "Windows"
+    role: "project_admin"
+
+  - team: "Windows-Admin"
+    organization: "Windows"
+    role: "inventory_admin"
+
+  - team: "Windows-Admin"
+    organization: "Windows"
+    role: "credential_admin"
+
+  # ==========================================
+  # OPERATOR ROLES (FOR TESTING)
+  # ==========================================
+  - team: "RHEL-Operator"
+    organization: "RHEL"
+    role: "auditor"  # Read-only access as verified in previous tests
+
+  - team: "Windows-Operator"
+    organization: "Windows"
+    role: "auditor"
