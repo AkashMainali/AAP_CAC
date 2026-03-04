@@ -1,0 +1,46 @@
+---
+- name: Extract Organization Report from AAP
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/api_vars.yml
+  vars:
+    report_path: "reports/01-organization-report.yml"
+
+  tasks:
+    - name: Ensure reports directory exists
+      ansible.builtin.file:
+        path: "../reports"
+        state: directory
+        mode: '0755'
+
+    - name: Fetch Organizations directly via URI module
+      ansible.builtin.uri:
+        url: "{{ aap_api_url }}/organizations/"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: api_response
+
+    - name: Generate the YAML report structure
+      ansible.builtin.set_fact:
+        # Manually constructing the list to avoid collection filter issues
+        org_list: |
+          {% set clean_list = [] %}
+          {% for item in api_response.json.results %}
+          {%   set _ = clean_list.append({'name': item.name, 'description': item.description}) %}
+          {% endfor %}
+          {{ clean_list }}
+
+    - name: Write report to organization-report.yml
+      ansible.builtin.copy:
+        content: |
+          ---
+          # AAP Organization Export - Generated on {{ now().strftime('%Y-%m-%d') }}
+          aap_organizations:
+          {{ org_list | to_nice_yaml(indent=2) | indent(2, True) }}
+        dest: "{{ report_path }}"
+        mode: '0644'

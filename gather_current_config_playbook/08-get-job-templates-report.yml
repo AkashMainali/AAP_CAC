@@ -1,0 +1,100 @@
+---
+- name: Scalable Job Template Export (1000+ Templates)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/api_vars.yml
+  vars:
+    report_path: "reports/08-job-templates-report.yml"
+    # Starting endpoint
+    initial_url: "{{ aap_api_url }}/job_templates/?page_size=200"
+
+  tasks:
+    - name: Ensure reports directory exists
+      ansible.builtin.file:
+        path: "reports"
+        state: directory
+        mode: '0755'
+
+    # --- PAGINATION LOGIC ---
+    - name: Fetch Job Templates Paginated
+      ansible.builtin.uri:
+        url: "{{ item }}"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: page_results
+      # This loop follows the 'next' URL in the metadata
+      loop: "{{ [initial_url] }}"
+      until: page_results.json.next is none
+      retries: 50 # Allows up to 10,000 templates (50 pages * 200)
+      delay: 0
+
+    - name: Consolidate all Template results
+      ansible.builtin.set_fact:
+        all_templates: "{{ page_results.results | map(attribute='json.results') | flatten }}"
+
+    # --- SUB-RESOURCES (Surveys/Credentials) ---
+    - name: Fetch Surveys and Credentials
+      ansible.builtin.uri:
+        url: "https://aap-gateway.apps.ocp419.crucible.iisl.com{{ item.0.url }}{{ item.1 }}"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      # Parallelism is key here for 1000+ objects
+      loop: "{{ all_templates | product(['survey_spec/', 'credentials/']) | list }}"
+      register: jt_details
+      loop_control:
+        label: "Fetching {{ item.1 }} for {{ item.0.name }}"
+
+    # --- SCHEDULES & RBAC ---
+    - name: Fetch all Schedules and RBAC
+      ansible.builtin.uri:
+        url: "{{ aap_api_url }}/{{ item }}/?page_size=200"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      loop: ["schedules", "role_team_assignments"]
+      register: global_responses
+
+    - name: Generate the YAML report structure
+      ansible.builtin.set_fact:
+        # 1. Map Templates
+        jt_list: |
+          {% set clean_jt = [] %}
+          {% for jt in all_templates %}
+          {%   set survey = (jt_details.results | selectattr('item.0.id', 'equalto', jt.id) | selectattr('item.1', 'equalto', 'survey_spec/') | first).json | default({}) %}
+          {%   set creds_list = (jt_details.results | selectattr('item.0.id', 'equalto', jt.id) | selectattr('item.1', 'equalto', 'credentials/') | first).json.results | default([]) %}
+          {%   set _ = clean_jt.append({
+                 'name': jt.name,
+                 'organization': jt.summary_fields.organization.name | default('Default'),
+                 'inventory': jt.summary_fields.inventory.name | default(''),
+                 'project': jt.summary_fields.project.name | default(''),
+                 'playbook': jt.playbook,
+                 'credentials': creds_list | map(attribute='name') | list,
+                 'survey_enabled': jt.survey_enabled,
+                 'survey_spec': survey if jt.survey_enabled else {}
+               }) %}
+          {% endfor %}
+          {{ clean_jt }}
+
+        # 2. Map Schedules and RBAC (Using same logic as previous playbooks)
+        sched_list: "{{ (global_responses.results | selectattr('item', 'equalto', 'schedules') | first).json.results }}"
+        rbac_raw: "{{ (global_responses.results | selectattr('item', 'equalto', 'role_team_assignments') | first).json.results }}"
+
+    - name: Write final report
+      ansible.builtin.copy:
+        content: |
+          ---
+          # Scalable AAP Export - Generated on {{ now().strftime('%Y-%m-%d') }}
+          controller_templates:
+          {{ (jt_list | from_yaml) | to_nice_yaml(indent=2) | indent(2, True) }}
+        dest: "{{ report_path }}"
+        mode: '0644'

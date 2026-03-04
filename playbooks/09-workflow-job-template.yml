@@ -5,7 +5,7 @@
   gather_facts: false
   vars_files:
     - ../env/aap_target.yml
-    - configs/templates.yml
+    - configs/09-workflow-job-templates.yml
 
   tasks:
     - name: Create Workflow and Nodes

@@ -1,0 +1,89 @@
+---
+- name: Extract Projects and RBAC Report
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/api_vars.yml
+  vars:
+    report_path: "reports/06-projects-report.yml"
+
+  tasks:
+    - name: Fetch all Projects
+      ansible.builtin.uri:
+        url: "{{ aap_api_url }}/projects/?page_size=200"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: projects_response
+
+    - name: Fetch RBAC Assignments
+      ansible.builtin.uri:
+        url: "{{ aap_api_url }}/role_team_assignments/?page_size=200"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: rbac_response
+
+    - name: Generate the YAML report structure
+      ansible.builtin.set_fact:
+        # 1. Process Main Projects
+        project_list: |
+          {% set clean_projects = [] %}
+          {% for p in projects_response.json.results %}
+          {%   set _ = clean_projects.append({
+                 'name': p.name,
+                 'organization': p.summary_fields.organization.name | default('Default'),
+                 'scm_type': p.scm_type,
+                 'scm_url': p.scm_url,
+                 'scm_credential': p.summary_fields.credential.name | default(''),
+                 'wait': true,
+                 'scm_update_on_launch': p.scm_update_on_launch | default(false),
+                 'scm_clean': p.scm_clean | default(false)
+               }) %}
+          {% endfor %}
+          {{ clean_projects }}
+
+        # 2. Process RBAC (Expanded and Object-Level)
+        rbac_list: |
+          {% set clean_rbac = [] %}
+          {% for r in rbac_response.json.results %}
+            {# If Org-level role, expand to all projects in that Org #}
+            {% if r.content_type == 'shared.organization' and 'Project' in r.summary_fields.role_definition.name %}
+              {% for p in projects_response.json.results %}
+                {% if p.summary_fields.organization.name | default('') == r.summary_fields.content_object.name %}
+                  {% set _ = clean_rbac.append({
+                    'team': r.summary_fields.team.name,
+                    'project': p.name,
+                    'role': 'admin' if 'Admin' in r.summary_fields.role_definition.name else 'use'
+                  }) %}
+                {% endif %}
+              {% endfor %}
+            {# If Direct Project-level role #}
+            {% elif r.content_type == 'awx.project' %}
+              {% set _ = clean_rbac.append({
+                'team': r.summary_fields.team.name,
+                'project': r.summary_fields.content_object.name,
+                'role': 'admin' if 'Admin' in r.summary_fields.role_definition.name else 'use'
+              }) %}
+            {% endif %}
+          {% endfor %}
+          {{ clean_rbac | unique | list }}
+
+    - name: Write report to projects-report.yml
+      ansible.builtin.copy:
+        content: |
+          ---
+          # AAP Projects & RBAC Export - Generated on {{ now().strftime('%Y-%m-%d') }}
+
+          controller_projects:
+          {{ (project_list | from_yaml) | to_nice_yaml(indent=2) | indent(2, True) }}
+
+          controller_roles:
+          {{ (rbac_list | from_yaml) | to_nice_yaml(indent=2) | indent(2, True) }}
+        dest: "{{ report_path }}"
+        mode: '0644'

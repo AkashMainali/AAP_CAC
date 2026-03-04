@@ -4,7 +4,7 @@
   gather_facts: no
   vars_files:
     - ../env/aap_target.yml
-    - configs/ldap.yml
+    - configs/04-ldap.yml
 
   tasks:
     - name: Configure LDAP for Ansible Automation Platform 2.6

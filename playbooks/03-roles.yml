@@ -4,7 +4,7 @@
   gather_facts: no
   vars_files:
     - ../env/aap_target.yml
-    - configs/roles.yml
+    - configs/03-roles.yml
 
   tasks:
     - name: Ensure Roles are present in AAP 2.6

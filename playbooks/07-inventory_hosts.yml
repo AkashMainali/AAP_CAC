@@ -5,7 +5,7 @@
   gather_facts: false
   vars_files:
     - ../env/aap_target.yml
-    - configs/inventory_hosts.yml
+    - configs/07-inventory_hosts.yml
 
   tasks:
     - name: Create Inventory and Hosts in Ansible Automation Platform

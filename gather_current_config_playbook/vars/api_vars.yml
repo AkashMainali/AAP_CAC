@@ -1,0 +1,7 @@
+---
+# # TOWER 3.8 URL: Standard path without the Gateway prefix
+#     tower_api_url: "https://your-tower-host.example.com/api/v2/organizations/"
+
+aap_api_url: "https://aap-gateway.apps.ocp419.crucible.iisl.com/api/controller/v2/"
+aap_user: "admin"
+aap_pass: "redhat"

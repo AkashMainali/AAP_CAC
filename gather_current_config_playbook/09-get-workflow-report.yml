@@ -1,0 +1,117 @@
+---
+- name: Extract Workflow Job Templates and Schema Report
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/api_vars.yml
+  vars:
+    report_path: "reports/09-workflows-report.yml"
+
+  tasks:
+    - name: Fetch all Workflow Job Templates
+      ansible.builtin.uri:
+        url: "{{ aap_api_url }}/workflow_job_templates/?page_size=200"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: wf_response
+
+    - name: Fetch Nodes for each Workflow
+      # Using the specific related link from the previous task's response
+      ansible.builtin.uri:
+        url: "https://aap-gateway.apps.ocp419.crucible.iisl.com{{ item.related.workflow_nodes }}"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      loop: "{{ wf_response.json.results }}"
+      register: node_details
+      loop_control:
+        label: "Fetching nodes for: {{ item.name }}"
+
+    - name: Fetch RBAC Assignments
+      ansible.builtin.uri:
+        url: "{{ aap_api_url }}/role_team_assignments/?page_size=200"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: rbac_response
+
+    - name: Generate the YAML report structure
+      ansible.builtin.set_fact:
+        # 1. Process Workflows and build the Schema
+        wf_list: |
+          {% set clean_wf = [] %}
+          {% for wf in wf_response.json.results %}
+            {# Find the nodes belonging to this specific workflow #}
+            {% set wf_node_results = (node_details.results | selectattr('item.id', 'equalto', wf.id) | first).json.results %}
+            {% set node_schema = [] %}
+            {% for node in wf_node_results %}
+              {# Find children: which nodes list this node's ID in their success_nodes #}
+              {% set success_links = [] %}
+              {% for child in wf_node_results %}
+                {% if node.id in child.success_nodes %}
+                  {% set _ = success_links.append(child.summary_fields.unified_job_template.name) %}
+                {% endif %}
+              {% endfor %}
+
+              {% set _ = node_schema.append({
+                   'name': node.summary_fields.unified_job_template.name,
+                   'unified_job_template': node.summary_fields.unified_job_template.name,
+                   'extra_data': node.extra_data | default({}),
+                   'success_nodes': success_links if success_links else []
+                 }) %}
+            {% endfor %}
+
+            {% set _ = clean_wf.append({
+                 'name': wf.name,
+                 'organization': wf.summary_fields.organization.name | default('Default'),
+                 'description': wf.description | default(''),
+                 'schema': node_schema
+               }) %}
+          {% endfor %}
+          {{ clean_wf }}
+
+        # 2. Process RBAC (Handling Workflow-specific roles)
+        rbac_list: |
+          {% set clean_rbac = [] %}
+          {% for r in rbac_response.json.results %}
+            {% if r.content_type == 'awx.workflow_jobtemplate' %}
+              {% set _ = clean_rbac.append({
+                'team': r.summary_fields.team.name,
+                'workflow_job_template': r.summary_fields.content_object.name,
+                'role': 'execute' if 'Execute' in r.summary_fields.role_definition.name else 'admin'
+              }) %}
+            {% elif r.content_type == 'shared.organization' and 'Workflow' in r.summary_fields.role_definition.name %}
+              {% for wf in wf_response.json.results %}
+                {% if wf.summary_fields.organization.name == r.summary_fields.content_object.name %}
+                  {% set _ = clean_rbac.append({
+                    'team': r.summary_fields.team.name,
+                    'workflow_job_template': wf.name,
+                    'role': 'admin' if 'Admin' in r.summary_fields.role_definition.name else 'execute'
+                  }) %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+          {{ clean_rbac | unique | list }}
+
+    - name: Write report to workflows-report.yml
+      ansible.builtin.copy:
+        content: |
+          ---
+          # AAP Workflow Export - Generated on {{ now().strftime('%Y-%m-%d') }}
+
+          controller_workflows:
+          {{ (wf_list | from_yaml) | to_nice_yaml(indent=2) | indent(2, True) }}
+
+          controller_roles:
+          {{ (rbac_list | from_yaml) | to_nice_yaml(indent=2) | indent(2, True) }}
+        dest: "{{ report_path }}"
+        mode: '0644'

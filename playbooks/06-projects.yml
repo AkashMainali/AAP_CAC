@@ -5,7 +5,7 @@
   gather_facts: false
   vars_files:
     - ../env/aap_target.yml
-    - configs/projects.yml
+    - configs/06-projects.yml
 
   tasks:
     - name: Create Projects in Ansible Automation Platform

@@ -5,7 +5,7 @@
   gather_facts: false
   vars_files:
     - ../env/aap_target.yml
-    - configs/templates.yml
+    - configs/08-templates.yml
 
   tasks:
     - name: Create Job Templates and Assign Execute Permissions

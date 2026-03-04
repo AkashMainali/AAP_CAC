@@ -4,7 +4,7 @@
   gather_facts: no
   vars_files:
     - ../env/aap_target.yml
-    - configs/teams.yml
+    - configs/02-teams.yml
 
   tasks:
     - name: Ensure Teams are present in AAP 2.6

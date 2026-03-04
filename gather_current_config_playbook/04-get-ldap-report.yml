@@ -1,0 +1,49 @@
+---
+- name: Extract LDAP Configuration Report
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/api_vars.yml
+  vars:
+    report_path: "reports/04-ldap-report.yml"
+
+  tasks:
+    - name: Ensure reports directory exists
+      ansible.builtin.file:
+        path: "reports"
+        state: directory
+        mode: '0755'
+
+    - name: Fetch LDAP Settings via API
+      ansible.builtin.uri:
+        url: "{{ aap_api_url }}/settings/ldap/"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: ldap_response
+
+    - name: Map LDAP Data to YAML Structure
+      ansible.builtin.set_fact:
+        # We select the specific keys you want for your CaC report
+        ldap_config:
+          AUTH_LDAP_SERVER_URI: "{{ ldap_response.json.AUTH_LDAP_SERVER_URI | default('') }}"
+          AUTH_LDAP_BIND_DN: "{{ ldap_response.json.AUTH_LDAP_BIND_DN | default('') }}"
+          AUTH_LDAP_BIND_PASSWORD: "ENCRYPTED_IN_AAP" # Security placeholder
+          AUTH_LDAP_USER_SEARCH: "{{ ldap_response.json.AUTH_LDAP_USER_SEARCH | default([]) }}"
+          AUTH_LDAP_GROUP_SEARCH: "{{ ldap_response.json.AUTH_LDAP_GROUP_SEARCH | default([]) }}"
+          AUTH_LDAP_USER_ATTR_MAP: "{{ ldap_response.json.AUTH_LDAP_USER_ATTR_MAP | default({}) }}"
+          AUTH_LDAP_GROUP_TYPE: "{{ ldap_response.json.AUTH_LDAP_GROUP_TYPE | default('') }}"
+          AUTH_LDAP_TEAM_MAP: "{{ ldap_response.json.AUTH_LDAP_TEAM_MAP | default({}) }}"
+
+    - name: Write report to ldap-report.yml
+      ansible.builtin.copy:
+        content: |
+          ---
+          # AAP LDAP Configuration Export - Generated on {{ now().strftime('%Y-%m-%d') }}
+          controller_settings:
+          {{ ldap_config | to_nice_yaml(indent=2) | indent(2, True) }}
+        dest: "{{ report_path }}"
+        mode: '0644'

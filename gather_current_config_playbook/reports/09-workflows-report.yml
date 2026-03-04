@@ -1,0 +1,46 @@
+---
+# AAP Workflow Export - Generated on 2026-03-04
+
+controller_workflows:
+  - description: Sequential ping from Dev to Prod
+    name: RHEL-Complete-Ping-Workflow
+    organization: RHEL
+    schema:
+    - extra_data:
+        ping_reason: Workflow Sequential Run
+      name: RHEL-Ping-Dev
+      success_nodes: []
+      unified_job_template: RHEL-Ping-Dev
+    - extra_data:
+        ticket_id: WF-12345
+      name: RHEL-Ping-Test
+      success_nodes: []
+      unified_job_template: RHEL-Ping-Test
+    - extra_data:
+        cr_number: CR-999
+      name: RHEL-Ping-Prod
+      success_nodes: []
+      unified_job_template: RHEL-Ping-Prod
+      
+  - description: Sequential Windows health check
+    name: Windows-Complete-Ping-Workflow
+    organization: Windows
+    schema:
+    - extra_data: {}
+      name: Windows-Ping-Dev
+      success_nodes: []
+      unified_job_template: Windows-Ping-Dev
+    - extra_data: {}
+      name: Windows-Ping-Test
+      success_nodes: []
+      unified_job_template: Windows-Ping-Test
+    - extra_data: {}
+      name: Windows-Ping-Prod
+      success_nodes: []
+      unified_job_template: Windows-Ping-Prod
+
+
+controller_roles:
+  - role: admin
+    team: RHEL-admin
+    workflow_job_template: RHEL-Complete-Ping-Workflow

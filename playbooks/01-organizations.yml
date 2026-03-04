@@ -4,9 +4,8 @@
   gather_facts: no
   vars_files:
     - ../env/aap_target.yml
-    - configs/orgs.yml
-    - configs/teams.yml
-    - configs/roles.yml
+    - configs/01-organizations.yml
+
   tasks:
     - name: Ensure Organizations are present in AAP 2.6
       ansible.builtin.include_role:

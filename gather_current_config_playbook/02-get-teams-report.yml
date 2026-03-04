@@ -1,0 +1,65 @@
+---
+- name: Extract Teams Report from AAP 2.6
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/api_vars.yml
+  vars:
+    # Path for the report
+    report_path: "reports/02-teams-report.yml"
+
+  tasks:
+    - name: Ensure reports directory exists
+      ansible.builtin.file:
+        path: "../reports"
+        state: directory
+        mode: '0755'
+
+    - name: Fetch all Teams from AAP
+      ansible.builtin.uri:
+        url: "{{ aap_api_url }}/teams/"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: teams_response
+
+    - name: Fetch Organization names for the Teams
+      ansible.builtin.uri:
+        url: "https://aap-gateway.apps.ocp419.crucible.iisl.com{{ item.related.organization }}"
+        method: GET
+        user: "{{ aap_user }}"
+        password: "{{ aap_pass }}"
+        force_basic_auth: true
+        validate_certs: false
+      loop: "{{ teams_response.json.results }}"
+      register: org_lookups
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Generate the YAML report structure
+      ansible.builtin.set_fact:
+        teams_list: |
+          {% set clean_list = [] %}
+          {% for team in teams_response.json.results %}
+          {# Find the matching organization name from the lookup results #}
+          {%   set org_name = (org_lookups.results | selectattr('item.id', 'equalto', team.id) | first).json.name %}
+          {%   set _ = clean_list.append({
+                 'name': team.name,
+                 'description': team.description,
+                 'organization': org_name
+               }) %}
+          {% endfor %}
+          {{ clean_list }}
+
+    - name: Write report to teams-report.yml
+      ansible.builtin.copy:
+        content: |
+          ---
+          # AAP Teams Export - Generated on {{ now().strftime('%Y-%m-%d') }}
+          aap_teams:
+          {{ teams_list | to_nice_yaml(indent=2) | indent(2, True) }}
+        dest: "{{ report_path }}"
+        mode: '0644'
