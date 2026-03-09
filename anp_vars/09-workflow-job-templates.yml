@@ -1,0 +1,53 @@
+---
+controller_workflows:
+  - name: "RHEL-Complete-Ping-Workflow"
+    organization: "RHEL"
+    description: "Sequential ping from Dev to Prod"
+    workflow_nodes:
+      - identifier: "node_rhel_dev"
+        unified_job_template:
+          name: "RHEL-Ping-Dev"
+          type: "job_template"
+        extra_data:
+          ping_reason: "Workflow Sequential Run"
+        success_nodes:
+          - "node_rhel_test"  # Points to the identifier below
+
+      - identifier: "node_rhel_test"
+        unified_job_template:
+          name: "RHEL-Ping-Test"
+          type: "job_template"
+        extra_data:
+          ticket_id: "WF-12345"
+        success_nodes:
+          - "node_rhel_prod"  # Points to the identifier below
+
+      - identifier: "node_rhel_prod"
+        unified_job_template:
+          name: "RHEL-Ping-Prod"
+          type: "job_template"
+        extra_data:
+          cr_number: "CR-999"
+
+  - name: "Windows-Complete-Ping-Workflow"
+    organization: "Windows"
+    description: "Sequential Windows health check"
+    workflow_nodes:
+      - identifier: "node_win_dev"
+        unified_job_template:
+          name: "Windows-Ping-Dev"
+          type: "job_template"
+        success_nodes:
+          - "node_win_test"
+
+      - identifier: "node_win_test"
+        unified_job_template:
+          name: "Windows-Ping-Test"
+          type: "job_template"
+        success_nodes:
+          - "node_win_prod"
+
+      - identifier: "node_win_prod"
+        unified_job_template:
+          name: "Windows-Ping-Prod"
+          type: "job_template"

@@ -1,0 +1,35 @@
+---
+controller_projects:
+  # --- RHEL Organization Project ---
+  - name: "RHEL project"
+    organization: "RHEL"
+    scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP-Linux-demo.git"
+    scm_credential: "RHEL-GIT Creds"
+    wait: true
+    scm_update_on_launch: true
+    scm_clean: true
+
+  # --- Windows Organization Project ---
+  - name: "Windows Project"
+    organization: "Windows"
+    scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP-Windows-demo.git"
+    scm_credential: "Windows-GIT Creds"
+    wait: true
+    scm_update_on_launch: true
+    scm_clean: true
+    
+controller_roles:
+  # --- RBAC for Projects ---
+  - team: "RHEL-admin"
+    project: "RHEL project"
+    role: "admin"
+
+  - team: "Windows-Admin"
+    project: "Windows Project"
+    role: "admin"
+
+  - team: "RHEL-Operator"
+    project: "RHEL project"
+    role: "use"

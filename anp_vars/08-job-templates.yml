@@ -1,0 +1,139 @@
+---
+controller_templates:
+  # ==========================================
+  # RHEL ORGANIZATION TEMPLATES
+  # ==========================================
+  - name: "RHEL-Ping-Dev"
+    organization: "RHEL"
+    inventory: "RHEL Inventory"
+    project: "RHEL project"
+    playbook: "linux_ping.yml"
+    credentials: ["RHEL-Machine Creds"]
+    survey_enabled: true
+    survey_spec:
+      name: "RHEL Dev Survey"
+      description: "Ping parameters for Development"
+      spec:
+        - question_name: "Reason for Ping"
+          variable: "ping_reason"
+          type: "text"
+          required: true
+
+  - name: "RHEL-Ping-Test"
+    organization: "RHEL"
+    inventory: "RHEL Inventory"
+    project: "RHEL project"
+    playbook: "linux_ping.yml"
+    credentials: ["RHEL-Machine Creds"]
+    survey_enabled: true
+    survey_spec:
+      name: "RHEL Test Survey"
+      description: "Ping parameters for Testing"
+      spec:
+        - question_name: "Ticket Number"
+          variable: "ticket_id"
+          type: "text"
+          required: true
+
+  - name: "RHEL-Ping-Prod"
+    organization: "RHEL"
+    inventory: "RHEL Inventory"
+    project: "RHEL project"
+    playbook: "linux_ping.yml"
+    credentials: ["RHEL-Machine Creds"]
+    survey_enabled: true
+    survey_spec:
+      name: "RHEL Prod Survey"
+      description: "CRITICAL: Production Ping"
+      spec:
+        - question_name: "Change Request Number"
+          variable: "cr_number"
+          type: "text"
+          required: true
+
+  # ==========================================
+  # WINDOWS ORGANIZATION TEMPLATES
+  # ==========================================
+  - name: "Windows-Ping-Dev"
+    organization: "Windows"
+    inventory: "Windows Inventory"
+    project: "Windows Project"
+    playbook: "win_ping.yml"
+    credentials: ["Windows-Machine Creds"]
+    survey_enabled: true
+    survey_spec:
+      name: "Windows Dev Survey"
+      description: "Windows Dev Ping"
+      spec: &win_spec
+        - question_name: "Environment"
+          variable: "target_env"
+          type: "text"
+          default: "Development"
+          required: true
+
+  - name: "Windows-Ping-Test"
+    organization: "Windows"
+    inventory: "Windows Inventory"
+    project: "Windows Project"
+    playbook: "win_ping.yml"
+    credentials: ["Windows-Machine Creds"]
+    survey_enabled: true
+    survey_spec:
+      name: "Windows Test Survey"
+      description: "Windows Test Ping"
+      spec: *win_spec
+
+  - name: "Windows-Ping-Prod"
+    organization: "Windows"
+    inventory: "Windows Inventory"
+    project: "Windows Project"
+    playbook: "win_ping.yml"
+    credentials: ["Windows-Machine Creds"]
+    survey_enabled: true
+    survey_spec:
+      name: "Windows Prod Survey"
+      description: "Windows Production Ping"
+      spec: *win_spec
+
+# ==========================================
+# SCHEDULES FOR THE TEMPLATES
+# ==========================================
+controller_schedules:
+  - name: "Daily RHEL Dev Healthcheck"
+    unified_job_template: "RHEL-Ping-Dev"
+    # Added extra_data to satisfy the 'required' survey question
+    extra_data:
+      ping_reason: "Scheduled Daily Healthcheck"
+    rrule: "DTSTART:20260303T000000Z RRULE:FREQ=DAILY;INTERVAL=1"
+
+  - name: "Weekly Windows Prod Audit"
+    unified_job_template: "Windows-Ping-Prod"
+    # Added extra_data to satisfy the 'required' survey question
+    extra_data:
+      target_env: "Production"
+    # Fixed: Added INTERVAL=1 and corrected the RRULE prefix logic
+    rrule: "DTSTART:20260308T000000Z RRULE:FREQ=WEEKLY;BYDAY=SU;INTERVAL=1"
+
+    
+controller_roles:
+  # RHEL Operators get access to all 3 RHEL templates
+  - team: "RHEL-Operator"
+    job_template: "RHEL-Ping-Dev"
+    role: "execute"
+  - team: "RHEL-Operator"
+    job_template: "RHEL-Ping-Test"
+    role: "execute"
+  - team: "RHEL-Operator"
+    job_template: "RHEL-Ping-Prod"
+    role: "execute"
+
+  # Windows Operators get access to all 3 Windows templates
+  - team: "Windows-Operator"
+    job_template: "Windows-Ping-Dev"
+    role: "execute"
+  - team: "Windows-Operator"
+    job_template: "Windows-Ping-Test"
+    role: "execute"
+  - team: "Windows-Operator"
+    job_template: "Windows-Ping-Prod"
+    role: "execute"
