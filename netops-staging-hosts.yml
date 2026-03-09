@@ -1,0 +1,177 @@
+---
+
+# helpers or dhcp servers
+# US EAST: 10.5.40.20, 10.2.40.20
+# US WEST: 10.9.40.20, 10.2.40.30
+# EU: 10.100.40.20, 10.101.40.20
+# APAC: 10.200.40.20, 10.203.40.20
+# AS2 (SEG): 10.205.40.20
+
+all:
+
+  children:
+    ios:
+
+      children:
+        switches:
+          children:
+
+            office_core_switches:
+              children:
+                bo_core:
+                  hosts:
+                    staging-BO-CORE-01:
+
+                br_core:
+                  hosts:
+                    staging-BR-CORE-01:
+
+                dc_core:
+                  hosts:
+                    staging-DC-CORE-01:
+
+                la_core:
+                  hosts:
+                    staging-LA-CORE-01:
+
+                ld_core:
+                  hosts:
+                    staging-LD-CORE-01:
+
+                ny_core:
+                  hosts:
+                    staging-NY-CORE-01:
+                
+                sf_core:
+                  hosts:
+                    staging-SF-CORE-01:
+
+                sv_core:
+                  hosts:
+                    staging-SV-CORE-01:
+
+                sa_core:
+                  hosts:
+                    staging-SA-CORE-01:
+                      ansible_host: 50.191.193.60
+
+            office_distro_switches:
+              children:
+
+                dc_distro:
+                  hosts:
+                    staging-DC-ACC1E-01: #C9407R
+                    staging-DC-ACC3E-01: #C9410R
+                    staging-DC-ACC3E-02: #C9407R
+                    staging-DC-ACC6E-01: #C9410R
+                    staging-DC-ACC6E-02: #C9407R
+                    staging-DC-ACC6W-01: #C9410R
+                    staging-DC-ACC8E-01: #C9410R
+                    staging-DC-ACC8W-01: #C9410R
+                    staging-DC-ACC11E-01: #C9407R
+                    staging-DC-ACC11E-02: #C9410R
+                    staging-DC-ACC11W-01: #C9407R
+                    staging-DC-ACC11W-02: #C9407R
+
+
+                la_distro:
+                  hosts:
+                    staging-LA-ACC43-01: #C9407R
+                    staging-LA-ACC44-01: #C9407R
+
+                ld_distro:
+                  hosts:
+                    staging-LD-ACC25-01: #C9407R
+                    staging-LD-ACC28-01: #C9407R
+#                    staging-LD-ACC29-01: #C9407R
+#                    staging-LD-ACC30-01: #C9407R
+                            
+
+                ny_distro:
+                  hosts:
+                    staging-NY-ACC2-01:
+                    staging-NY-ACC3-01:
+                    NY-AV4-01: #C9407R
+                    staging-NY-ACC5-01:
+                    staging-NY-ACC6-01:
+                    staging-NY-ACC7-01:
+                    staging-NY-ACC8-01:
+                    staging-NY-ACC9-01:
+                    staging-NY-ACC10-01:
+                    staging-NY-ACC11-01:
+                    staging-NY-ACC12-01:
+                    staging-NY-ACC14-01:
+
+                sf_distro:
+                  hosts:
+                    staging-SF-ACC9-01:
+                    staging-SF-ACC10-01:                
+
+                sv_distro:
+                  hosts:
+                    staging-SV-ACC5-01: #C9407R
+                    staging-SV-ACC6-01: #C9407R
+
+    by_location:
+      children:
+
+        us_region:
+          children:
+
+            us_region_east:
+              children:
+              
+                bo_all:
+                  children:
+
+                    bo_core:
+
+                dc_all:    
+                  children:
+
+                    dc_core:
+                    dc_distro:
+
+                ny_all:
+                  children:
+
+                    ny_core:
+                    ny_distro:
+
+            us_region_west:
+              children:
+
+                la_all:
+                  children:
+
+                    la_core:
+                    la_distro:
+
+                sf_all:
+                  children:
+
+                    sf_core:
+                    sf_distro:
+
+                sv_all:
+                  children:
+
+                    sv_core:
+                    sv_distro:
+
+                sa_all:
+                  children:
+
+                    sa_core:
+
+        eu_region:
+          children:
+
+            ld_all:
+              children:
+                ld_core:
+                ld_distro:
+
+            br_all:
+              children:
+                br_core:

@@ -5,3 +5,6 @@ aap_organizations:
 
   - name: "Windows"
     description: "Windows Systems Organization"
+
+  - name: "Networking"
+    description: "Networking Systems Organization"
