@@ -33,98 +33,39 @@
 #     inventory: "Windows Inventory"
 #     role: "admin"
 
----
-# =============================================================================
-# configs/09-netops-staging-inventory.yml
-# AAP 2.6 Configuration-as-Code — Project + Project-Sourced Inventory
-#
-# Source inventory file:
-#   https://github.com/AkashMainali/AAP_CAC/blob/main/playbooks/anp_inventory/netops-staging-hosts.yml
-#
-# What this file creates in AAP (in dispatch order):
-#   1. controller_projects          — Git project pointing at the repo
-#   2. controller_inventories       — Inventory container (no static hosts/groups)
-#   3. controller_inventory_sources — Binds the inventory to the project file path
-#
-# Prerequisites that must already exist in AAP before running:
-#   - Organisation:  "Default"  (or update to your org name below)
-#   - Credential:    "RHEL-GIT Creds"  (SCM credential for GitHub access)
-#
-# After running this playbook, trigger a sync:
-#   - Via AAP UI: Inventories -> NetOps Staging Inventory -> Sources -> Sync
-#   - Via CLI:    awx inventory_source update <source-id>
-#   - Automatically on next job launch (update_on_launch: true is set)
-# =============================================================================
-
-
-# ── STEP 1: Project ───────────────────────────────────────────────────────────
-# Creates the SCM project in AAP that points at your GitHub repository.
-# The project syncs the full repo — individual inventory sources then
-# reference specific file paths within it.
-controller_projects:
+---controller_projects:
   - name: "AAP CaC - NetOps"
     organization: "Default"
     description: "Ansible Automation Platform Configuration-as-Code repository — NetOps team"
     scm_type: git
     scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     scm_branch: "main"
-    credential: "RHEL-GIT Creds"
-
-    # Sync behaviour
-    scm_update_on_launch: false     # Project syncs independently of job launches.
-                                    # Inventory source update_on_launch (Step 3) handles
-                                    # pulling the latest inventory file before job runs.
-    scm_clean: true                 # Discard local modifications on each sync — ensures
-                                    # AAP always reflects exactly what is in the repo.
-    scm_delete_on_update: false     # Keep the local project clone between syncs.
-    scm_track_submodules: false     # Set true only if your repo uses Git submodules.
-
-    # Allow branch/tag/commit override at job launch time
+    # No credential needed — AkashMainali/AAP_CAC is a public GitHub repository
+    scm_clean: true
+    scm_delete_on_update: false
+    scm_track_submodules: false
+    scm_update_on_launch: false
     allow_override: false
 
-
-# ── STEP 2: Inventory container ───────────────────────────────────────────────
-# Creates the named inventory in AAP.
-# No controller_groups or controller_hosts are defined here — all hosts,
-# groups, and their variables come from the SCM source file on sync.
 controller_inventories:
   - name: "NetOps Staging Inventory"
     organization: "Default"
-    description: "IOS office switches — staging environment. Sourced from netops-staging-hosts.yml in Git."
-
-    # Inventory-level variables apply to ALL hosts regardless of what the
-    # SCM file provides. These are the lowest-priority variables.
-    # Useful for org-wide connection defaults that should not live in the repo.
+    description: "IOS office switches — staging. Sourced from netops-staging-hosts.yml in Git."
     variables:
       ansible_network_os: ios
       ansible_connection: network_cli
       ansible_become: true
       ansible_become_method: enable
 
-
-# ── STEP 3: Inventory Source ──────────────────────────────────────────────────
-# Binds the inventory container to the specific file path in the project repo.
-# When a sync runs, AAP reads this file and populates all hosts and groups.
 controller_inventory_sources:
   - name: "NetOps Staging Inventory Source"
-    inventory: "NetOps Staging Inventory"       # must match controller_inventories[].name exactly
+    inventory: "NetOps Staging Inventory"
     description: "Syncs hosts and groups from netops-staging-hosts.yml in the AAP CaC repo"
-
-    source: scm                                  # always 'scm' for project-backed sources
-    source_project: "AAP CaC - NetOps"           # must match controller_projects[].name exactly
+    source: scm
+    source_project: "AAP CaC - NetOps"
     source_path: "playbooks/anp_inventory/netops-staging-hosts.yml"
-    #                ^^ path is relative to the repo root ^^
-    #                repo root = https://github.com/AkashMainali/AAP_CAC
-    #                full path in repo = playbooks/anp_inventory/netops-staging-hosts.yml
-
-    # Sync behaviour
-    update_on_launch: true          # sync the inventory file from Git before every job run
-    update_cache_timeout: 0         # 0 = always re-sync on launch; increase (seconds) to cache
-
-    # Overwrite controls — both should be true to keep AAP in sync with Git
-    overwrite: true                 # remove hosts/groups from AAP that no longer exist in the file
-    overwrite_vars: true            # fully replace vars on each sync (prevents stale var accumulation)
-
-    # Verbosity of the sync job output in AAP UI
-    # 0=normal  1=verbose  2=more verbose  3=debug  4=connection debug  5=winrm debug
+    update_on_launch: true
+    update_cache_timeout: 0
+    overwrite: true
+    overwrite_vars: true
     verbosity: 1
