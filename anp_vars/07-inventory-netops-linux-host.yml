@@ -454,6 +454,20 @@
 # overridden by anything in the SCM source file (group vars > inventory vars,
 # host vars > group vars). Only set vars here that should apply globally and
 # are safe to override from the repo file.
+controller_projects:
+  - name: "AAP CaC - NetOps"
+    organization: "Default"
+    description: "Ansible Automation Platform Configuration-as-Code repository — NetOps team"
+    scm_type: git
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    scm_branch: "main"
+    # No credential needed — AkashMainali/AAP_CAC is a public GitHub repository
+    scm_clean: true
+    scm_delete_on_update: false
+    scm_track_submodules: false
+    scm_update_on_launch: false
+    allow_override: false
+    
 controller_inventories:
   - name: "NetOps Linux Inventory"
     organization: "Default"
