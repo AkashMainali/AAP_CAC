@@ -14,25 +14,21 @@ controller_projects:
     allow_override: false
 
 controller_inventories:
-  - name: "Proving Ground Inventory"
+  - name: "NetOps Linux Hosts"
     organization: "Default"
-    description: >-
-      Network proving ground / lab environment — IOS switches, IOS routers,
-      and NX-OS Nexus cores. Sourced from provinggound-hosts.yml in Git.
-      Note: source filename has a typo (provinggound) — this is intentional
-      to match the actual filename in the repository.
+
 
 
 controller_inventory_sources:
   - name: "Proving Ground Inventory Source"
     inventory: "Proving Ground Inventory"
     description: >-
-      Syncs hosts and groups from provinggound-hosts.yml in the AAP CaC repo.
+      Syncs hosts and groups from netops-production-hosts.yml in the AAP CaC repo.
       Covers IOS core/distro switches, IOS routers (WAN/CPE/cEdge),
       and NX-OS Nexus core switches with HSRP role host vars.
     source: scm
     source_project: "AAP CaC - NetOps"
-    source_path: "playbooks/anp_inventory/provinggound-hosts.yml"
+    source_path: "playbooks/anp_inventory/netops-production-hosts.yml"
     #                                     ^^^^^^^^^^^
     #   Intentional double-g typo — matches the actual filename in Git exactly.
     #   If this is ever corrected in the repo, update this path to match.
