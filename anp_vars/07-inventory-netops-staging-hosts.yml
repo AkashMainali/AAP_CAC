@@ -1,0 +1,37 @@
+---
+controller_projects:
+  - name: "AAP CaC - NetOps"
+    organization: "Default"
+    description: "Ansible Automation Platform Configuration-as-Code repository — NetOps team"
+    scm_type: git
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    scm_branch: "main"
+    # No credential needed — AkashMainali/AAP_CAC is a public GitHub repository
+    scm_clean: true
+    scm_delete_on_update: false
+    scm_track_submodules: false
+    scm_update_on_launch: false
+    allow_override: false
+
+controller_inventories:
+  - name: "NetOps Staging Inventory"
+    organization: "Default"
+    description: "IOS office switches — staging. Sourced from netops-staging-hosts.yml in Git."
+    variables:
+      ansible_network_os: ios
+      ansible_connection: network_cli
+      ansible_become: true
+      ansible_become_method: enable
+
+controller_inventory_sources:
+  - name: "NetOps Staging Inventory Source"
+    inventory: "NetOps Staging Inventory"
+    description: "Syncs hosts and groups from netops-staging-hosts.yml in the AAP CaC repo"
+    source: scm
+    source_project: "AAP CaC - NetOps"
+    source_path: "playbooks/anp_inventory/netops-staging-hosts.yml"
+    update_on_launch: true
+    update_cache_timeout: 0
+    overwrite: true
+    overwrite_vars: true
+    verbosity: 1

@@ -32,40 +32,103 @@
 #   - team: "Windows-Admin"
 #     inventory: "Windows Inventory"
 #     role: "admin"
+---
+# =============================================================================
+# configs/10-netops-linux-inventory.yml
+# AAP 2.6 Configuration-as-Code — Project-Sourced Linux Inventory
+#
+# Source inventory file:
+#   https://github.com/AkashMainali/AAP_CAC/blob/main/playbooks/anp_inventory/netops-linux-hosts.yml
+#
+# What this file creates in AAP (in dispatch order):
+#   1. controller_inventories       — Inventory container (no static hosts/groups)
+#   2. controller_inventory_sources — Binds the inventory to the project file path
+#
+# NOTE: controller_projects is NOT defined here.
+#   The project "AAP CaC - NetOps" was already created in
+#   configs/09-netops-staging-inventory.yml and already points at
+#   https://github.com/AkashMainali/AAP_CAC.git on the main branch.
+#   Re-declaring it would cause a duplicate and is unnecessary.
+#
+# Prerequisites that must already exist in AAP before running:
+#   - Organisation : "Default"
+#   - Project      : "AAP CaC - NetOps"  (created by 09-netops-staging-inventory.yml)
+#
+# What the SCM source file provides automatically on sync:
+#   Groups   : by_function, iperf, eveng, tower, gitlab, general,
+#              splunk, splunk_indexers, splunk_search_heads,
+#              splunk_forwarders, splunk_heavy_forwarders, splunk_masters,
+#              zoomprov, by_region, US, US1, US2, US3,
+#              EMEA, EU1, EU2, APAC, AS1, AS2, py3_hosts
+#   Hosts    : as1iperf01, as2iperf01, us2iperf01, eu1iperf01, eu2iperf01,
+#              us1deveveng01, us1atower02, us1gitlab01, us1netweb01,
+#              us1sesidx01-03, us1sessearch01, us1syslog02,
+#              us1sesstream01, us1sesstream02, us1sesmaster01,
+#              us1zoomprov01, us3zoomprov01  (19 hosts total)
+#   All group/host variables are sourced from the file — no separate CaC needed.
+#
+# After running this playbook, trigger a sync:
+#   AAP UI : Inventories -> NetOps Linux Inventory -> Sources -> Sync
+#   CLI    : awx inventory_source update --name "NetOps Linux Inventory Source" \
+#              --inventory "NetOps Linux Inventory"
+# =============================================================================
 
----controller_projects:
-  - name: "AAP CaC - NetOps"
-    organization: "Default"
-    description: "Ansible Automation Platform Configuration-as-Code repository — NetOps team"
-    scm_type: git
-    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
-    scm_branch: "main"
-    # No credential needed — AkashMainali/AAP_CAC is a public GitHub repository
-    scm_clean: true
-    scm_delete_on_update: false
-    scm_track_submodules: false
-    scm_update_on_launch: false
-    allow_override: false
 
+# ── STEP 1: Inventory container ───────────────────────────────────────────────
+# Creates a bare inventory container in AAP.
+# All hosts, groups, and their variables are populated by the SCM sync.
+#
+# Inventory-level variables defined here are the LOWEST priority — they are
+# overridden by anything in the SCM source file (group vars > inventory vars,
+# host vars > group vars). Only set vars here that should apply globally and
+# are safe to override from the repo file.
 controller_inventories:
-  - name: "NetOps Staging Inventory"
+  - name: "NetOps Linux Inventory"
     organization: "Default"
-    description: "IOS office switches — staging. Sourced from netops-staging-hosts.yml in Git."
-    variables:
-      ansible_network_os: ios
-      ansible_connection: network_cli
-      ansible_become: true
-      ansible_become_method: enable
+    description: >-
+      NetOps Linux managed nodes — sourced from netops-linux-hosts.yml in Git.
+      Covers iperf, EVE-NG, Tower, GitLab, Splunk stack, Zoom provisioning nodes
+      across US, EMEA, and APAC regions.
 
+    # NOTE on inventory-level variables:
+    # The source file (netops-linux-hosts.yml) sets all.vars including:
+    #   ansible_user, ansible_become, snmp_*, reboot_anytime,
+    #   internal_dns_search, update_management_*
+    # Those vars come from the SCM file on sync — do NOT duplicate them here.
+    #
+    # The only safe vars to set at the inventory level are connection defaults
+    # that should survive even if the SCM file changes its all.vars block.
+    # Leave this empty unless you have a specific override requirement.
+    variables: {}
+
+
+# ── STEP 2: Inventory Source ──────────────────────────────────────────────────
+# Binds the inventory container to the specific file inside the project repo.
+# On sync, AAP reads this file and populates all hosts, groups, and variables.
 controller_inventory_sources:
-  - name: "NetOps Staging Inventory Source"
-    inventory: "NetOps Staging Inventory"
-    description: "Syncs hosts and groups from netops-staging-hosts.yml in the AAP CaC repo"
+  - name: "NetOps Linux Inventory Source"
+    inventory: "NetOps Linux Inventory"
+    description: >-
+      Syncs hosts and groups from netops-linux-hosts.yml in the AAP CaC repo.
+      Groups: by_function (iperf/eveng/tower/gitlab/general/splunk/zoomprov),
+      by_region (US/EMEA/APAC sub-regions), py3_hosts.
+
     source: scm
     source_project: "AAP CaC - NetOps"
-    source_path: "playbooks/anp_inventory/netops-staging-hosts.yml"
-    update_on_launch: true
-    update_cache_timeout: 0
+    source_path: "playbooks/anp_inventory/netops-linux-hosts.yml"
+    #             ^^ relative to repo root: github.com/AkashMainali/AAP_CAC ^^
+
+    # Sync behaviour
+    update_on_launch: true        # re-sync from Git before every job run
+    update_cache_timeout: 0       # 0 = always re-sync; increase (seconds) to throttle
+
+    # Overwrite controls
+    # Both must be true to keep AAP perfectly mirroring the Git file.
+    # overwrite: false  would leave stale hosts in AAP after they are removed from the file.
+    # overwrite_vars: false  would leave old variable values even after they change in Git.
     overwrite: true
     overwrite_vars: true
+
+    # Sync job output verbosity
+    # 0=normal  1=verbose  2=more verbose  3=debug
     verbosity: 1

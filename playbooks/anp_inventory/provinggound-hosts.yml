@@ -1,0 +1,49 @@
+---
+
+all:
+
+  children:
+    ios:
+
+      children:
+        switches:
+
+          children:
+            office_core_switches:
+
+              children:               
+                proving_core:
+                  hosts:
+                    proving-core-01:
+                    proving-core-02:
+
+            office_distro_switches:
+
+              children:
+                proving_distro:
+                  hosts:
+                    pg-acc41-01:
+                    pg-acc42-01:
+
+        routers:
+          children:
+            porving_routers:
+              hosts:
+                proving-4431-wan:
+                proving-4331-cpe:
+                pg-cedge-01:
+                pg-cedge-02:
+
+    nxos:
+      vars:
+
+      children:
+        nexus_switches:
+
+          children:
+            proving_nx_cores:
+              hosts:
+                proving-nx-core-01:
+                  hsrp_primary: true
+                proving-nx-core-02:
+                  hsrp_secondary: true
