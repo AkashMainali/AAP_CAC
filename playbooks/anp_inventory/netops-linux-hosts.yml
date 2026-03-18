@@ -1,0 +1,198 @@
+---
+
+#well its a start -Olly 2022-2-2 (that is a lot of twos)
+
+# DNS servers for region / datacenter.
+# US1: 10.5.40.11,10.5.40.12
+# US2: 10.9.40.11,10.9.40.12
+# US3: 10.2.40.11,10.2.40.12
+# EU1: 10.100.40.11,10.100.40.12
+# EU2: 10.101.100.13,10.101.100.14
+# AS1: 10.203.40.11,10.203.40.12
+# AS2: 10.200.40.11,10.200.40.12
+# AS2 (prc domain): 10.205.40.11,10.205.40.12
+
+all:
+
+  vars:
+    ansible_user: ansible-worker
+    ansible_become: true
+    snmp_user: linux-snmp
+    #move these to vault you idiot before prod !
+    #this module is not good at naming things this is a SHA password
+    snmp_password: xxxxxxxxxxxxxx
+    #this module is not good at naming things this is an AES key
+    snmp_encryption: xxxxxxxxxxxxxx
+    snmp_contact: itnetworkoperations@arnoldporter.com
+    reboot_anytime: true
+    internal_dns_serach:
+      - aplaw.arnoldporter.net
+      - arnoldporter.net
+      - apsp.local
+      - devenv.local
+      - kayescholer.com
+    #Ubuntu update Vars
+    update_management_Mail: 'root'
+    update_management_Origins_Pattern:
+      - '${distro_id} ${distro_codename}-security'
+      - '${distro_id} ${distro_codename}-updates'
+
+  children:
+
+    by_function:
+      children:
+
+        iperf:
+          hosts:
+            as1iperf01:
+            as2iperf01:
+            us2iperf01:
+            eu1iperf01:
+            eu2iperf01:
+        eveng:
+          hosts:
+            us1deveveng01:
+        tower:
+          hosts:
+            us1atower02:
+
+        gitlab:
+          hosts:
+            us1gitlab01:
+          vars:
+            update_management_Origins_Pattern:
+              - '${distro_id} ${distro_codename}-security'
+              - '${distro_id} ${distro_codename}-updates'
+              - 'packages.gitlab.com/gitlab/gitlab-ce:focal'
+
+        general:
+          hosts:
+            us1netweb01:
+
+        splunk:
+          vars:
+            ansible_python_interpreter: /usr/bin/python2
+          children:
+            splunk_indexers:
+              hosts:
+                us1sesidx01:
+                us1sesidx02:
+                us1sesidx03:
+              vars:
+                reboot_anytime: false
+
+            splunk_search_heads:
+              hosts:
+                us1sessearch01:
+
+            splunk_forwarders:
+              hosts:
+                us1syslog02:
+
+            splunk_heavy_forwarders:
+              hosts:
+                us1sesstream01:
+                us1sesstream02:
+                  internal_dns_servers:
+                    - 192.168.10.8
+                    - 192.168.10.9
+
+            splunk_masters:
+              hosts:
+                us1sesmaster01:
+
+        zoomprov:
+          hosts:
+            us1zoomprov01:
+            us3zoomprov01:
+
+    by_region:
+      children:
+
+        US:
+          children:
+            US1:
+              hosts:
+                us1gitlab01:
+                us1netweb01:
+                us1sesidx01:
+                us1sesidx02:
+                us1sesidx03:
+                us1sessearch01:
+                us1syslog02:
+                us1sesstream01:
+                us1sesmaster01:
+                us1sesstream02:
+                us1zoomprov01:
+                us1atower02:
+                us1deveveng01:
+
+              vars:
+                snmp_location: US1
+                internal_dns_servers:
+                  - 10.5.40.11
+                  - 10.5.40.12
+                  - 10.2.40.11
+
+            US2:
+              hosts:
+                us2iperf01:
+              vars:
+                internal_dns_servers:
+                  - 10.9.40.11
+                  - 10.9.40.12
+                  - 10.5.40.11
+
+            US3:
+              hosts:
+                us3zoomprov01:
+              vars:
+                internal_dns_servers:
+                  - 10.2.40.11
+                  - 10.2.40.12
+                  - 10.5.40.11
+
+        EMEA:
+          children:
+            EU1:
+              hosts:
+                eu1iperf01:
+              vars:
+                internal_dns_servers:
+                  - 10.100.40.11
+                  - 10.100.40.12
+            EU2:
+              hosts:
+                eu2iperf01:
+              vars:
+                internal_dns_servers:
+                  - 10.100.40.11
+                  - 10.100.40.12
+        APAC:
+          children:
+            AS1:
+              hosts:
+                as1iperf01:
+              vars:
+                internal_dns_servers:
+                  - 10.200.40.11
+                  - 10.200.40.12
+            AS2:
+              hosts:
+                as2iperf01:
+              vars:
+                internal_dns_servers:
+                  - 10.203.40.11
+                  - 10.203.40.12
+    py3_hosts:
+      hosts:
+        us1netweb01:
+        us1gitlab01:
+        as1iperf01:
+        as2iperf01:
+        us2iperf01:
+        us1atower02:
+        eu1iperf01:
+        eu2iperf01:
+      vars:
+        ansible_python_interpreter: /usr/bin/python3

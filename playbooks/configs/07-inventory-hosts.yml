@@ -34,407 +34,589 @@
 #     role: "admin"
 
 ---
-# Converted from static inventory to AAP 2.6 Configuration-as-Code
-# infra.aap_configuration compatible var file
-# Source: all-in-one YAML inventory (original comment by Olly, 2022-02-22)
+# =============================================================================
+# configs/08-network-switches-inventory.yml
+# AAP 2.6 Configuration-as-Code — Network Switches Inventory
+# Source: IOS switches staging inventory (all regions)
+#
+# DHCP / Helper server reference (for use in templates/roles):
+#   US EAST:   10.5.40.20, 10.2.40.20
+#   US WEST:   10.9.40.20, 10.2.40.30
+#   EU:        10.100.40.20, 10.101.40.20
+#   APAC:      10.200.40.20, 10.203.40.20
+#   AS2 (SEG): 10.205.40.20
+#
+# NOTES:
+#   - staging-LD-ACC29-01 and staging-LD-ACC30-01 were commented out of
+#     ld_distro in the source inventory and are intentionally excluded here.
+#   - staging-LD-ACC30-01 exists ONLY in ld_av (removed from ld_distro).
+#   - staging-BR-CORE-01 belongs to both br_core and br_av (dual function).
+#   - staging-CH-AV-01 belongs to both ch_distro and ch_av.
+#   - NY-AV4-01 has no staging- prefix — intentional, matches source.
+#
+# GROUP CREATION ORDER — groups must be defined children-before-parents
+# because the children: key is resolved server-side at creation time:
+#   Tier 1: Leaf groups (core / distro / av) — have hosts, no children
+#   Tier 2: Switch tier containers (office_*_switches) — no hosts, no children
+#   Tier 3: Location aggregates ({location}_all) — children are Tier 1 groups
+#   Tier 4: Region and top-level containers — children are Tier 2/3 groups
+# =============================================================================
 
+# ── STEP 1: Inventory container ───────────────────────────────────────────────
 controller_inventories:
-  - name: "Network Automation Inventory"
+  - name: "Network Switches Inventory"
     organization: "Default"
-    description: "Master inventory covering all regions and functions - converted from static YAML inventory"
+    description: "Staging inventory for IOS office switches — all regions (core, distro, AV)"
 
-# ---------------------------------------------------------------------------
-# GROUPS
-# Top-level smart groups map to the original `children` hierarchy.
-# AAP inventory groups are created via controller_groups.
-# ---------------------------------------------------------------------------
+# ── STEP 2: Groups ────────────────────────────────────────────────────────────
 controller_groups:
 
-  # ── by_function ────────────────────────────────────────────────────────────
-  - name: by_function
-    inventory: "Network Automation Inventory"
-    description: "Hosts grouped by their functional role"
+  # ============================================================================
+  # TIER 1 — Leaf functional groups
+  # Direct host membership only. No children key. Created first so that
+  # Tier 3 aggregator groups can reference them via children: safely.
+  # ============================================================================
 
-  - name: iperf
-    inventory: "Network Automation Inventory"
-    description: "iPerf testing nodes"
-    parents:
-      - by_function
+  # ── Core switches ─────────────────────────────────────────────────────────
+  - name: bo_core
+    inventory: "Network Switches Inventory"
+    description: "Boston office core switches"
+    hosts:
+      - staging-BO-CORE-01
 
-  - name: thousand_eyes
-    inventory: "Network Automation Inventory"
-    description: "ThousandEyes agent nodes"
-    parents:
-      - by_function
+  - name: br_core
+    inventory: "Network Switches Inventory"
+    description: "Brussels office core switches"
+    hosts:
+      - staging-BR-CORE-01
 
-  - name: eveng
-    inventory: "Network Automation Inventory"
-    description: "EVE-NG lab nodes"
-    parents:
-      - by_function
+  - name: ch_core
+    inventory: "Network Switches Inventory"
+    description: "Chicago office core switches"
+    hosts:
+      - staging-CH-CORE-01
 
-  - name: tower
-    inventory: "Network Automation Inventory"
-    description: "Ansible Tower / AAP nodes"
-    parents:
-      - by_function
+  - name: dc_core
+    inventory: "Network Switches Inventory"
+    description: "Washington DC office core switches"
+    hosts:
+      - staging-DC-CORE-01
 
-  - name: gitlab
-    inventory: "Network Automation Inventory"
-    description: "GitLab nodes"
-    parents:
-      - by_function
+  - name: ht_core
+    inventory: "Network Switches Inventory"
+    description: "Houston office core switches"
+    hosts:
+      - staging-HT-CORE-01
 
-  - name: chronicle
-    inventory: "Network Automation Inventory"
-    description: "Google Chronicle SIEM nodes"
-    parents:
-      - by_function
+  - name: la_core
+    inventory: "Network Switches Inventory"
+    description: "Los Angeles office core switches"
+    hosts:
+      - staging-LA-CORE-01
 
-  - name: docker
-    inventory: "Network Automation Inventory"
-    description: "Nodes with Docker installed (includes thousand_eyes child group)"
-    parents:
-      - by_function
+  - name: ld_core
+    inventory: "Network Switches Inventory"
+    description: "London office core switches"
+    hosts:
+      - staging-LD-CORE-01
+
+  - name: ny_core
+    inventory: "Network Switches Inventory"
+    description: "New York office core switches"
+    hosts:
+      - staging-NY-CORE-01
+
+  - name: sf_core
+    inventory: "Network Switches Inventory"
+    description: "San Francisco office core switches"
+    hosts:
+      - staging-SF-CORE-01
+
+  - name: sv_core
+    inventory: "Network Switches Inventory"
+    description: "Silicon Valley office core switches"
+    hosts:
+      - staging-SV-CORE-01
+
+  - name: sa_core
+    inventory: "Network Switches Inventory"
+    description: "Santa Ana office core switches"
+    hosts:
+      - staging-SA-CORE-01
+
+  # ── Distribution switches ──────────────────────────────────────────────────
+  - name: ch_distro
+    inventory: "Network Switches Inventory"
+    description: "Chicago office distribution switches"
+    hosts:
+      - staging-CH-ACC34-01
+      - staging-CH-ACC35-01
+      - staging-CH-AV-01        # dual-role: also member of ch_av
+
+  - name: dc_distro
+    inventory: "Network Switches Inventory"
+    description: "Washington DC office distribution switches (C9407R/C9410R)"
+    hosts:
+      - staging-DC-ACC1E-01     # C9407R
+      - staging-DC-ACC3E-01     # C9410R
+      - staging-DC-ACC3E-02     # C9407R
+      - staging-DC-ACC6E-01     # C9410R
+      - staging-DC-ACC6E-02     # C9407R
+      - staging-DC-ACC6W-01     # C9410R
+      - staging-DC-ACC8E-01     # C9410R
+      - staging-DC-ACC8W-01     # C9410R
+      - staging-DC-ACC11E-01    # C9407R
+      - staging-DC-ACC11E-02    # C9410R
+      - staging-DC-ACC11W-01    # C9407R
+      - staging-DC-ACC11W-02    # C9407R
+
+  - name: la_distro
+    inventory: "Network Switches Inventory"
+    description: "Los Angeles office distribution switches (C9407R)"
+    hosts:
+      - staging-LA-ACC43-01     # C9407R
+      - staging-LA-ACC44-01     # C9407R
+
+  - name: ld_distro
+    inventory: "Network Switches Inventory"
+    description: "London office distribution switches (C9407R)"
+    hosts:
+      - staging-LD-ACC25-01     # C9407R
+      - staging-LD-ACC28-01     # C9407R
+      # staging-LD-ACC29-01 — intentionally excluded (commented out in source)
+      # staging-LD-ACC30-01 — intentionally excluded from distro (ld_av only)
+
+  - name: ny_distro
+    inventory: "Network Switches Inventory"
+    description: "New York office distribution switches"
+    hosts:
+      - staging-NY-ACC2-01
+      - staging-NY-ACC3-01
+      - NY-AV4-01               # no staging- prefix — matches source exactly
+      - staging-NY-ACC5-01
+      - staging-NY-ACC6-01
+      - staging-NY-ACC7-01
+      - staging-NY-ACC8-01
+      - staging-NY-ACC9-01
+      - staging-NY-ACC10-01
+      - staging-NY-ACC11-01
+      - staging-NY-ACC12-01
+      - staging-NY-ACC14-01
+
+  - name: sa_distro
+    inventory: "Network Switches Inventory"
+    description: "Santa Ana office distribution switches"
+    hosts:
+      - staging-SA-ACC36-01
+
+  - name: sf_distro
+    inventory: "Network Switches Inventory"
+    description: "San Francisco office distribution switches"
+    hosts:
+      - staging-SF-ACC9-01
+      - staging-SF-ACC10-01
+
+  - name: sv_distro
+    inventory: "Network Switches Inventory"
+    description: "Silicon Valley office distribution switches (C9407R)"
+    hosts:
+      - staging-SV-ACC5-01      # C9407R
+      - staging-SV-ACC6-01      # C9407R
+
+  # ── AV switches ───────────────────────────────────────────────────────────
+  - name: br_av
+    inventory: "Network Switches Inventory"
+    description: "Brussels AV switches — staging-BR-CORE-01 serves dual core+AV role"
+    hosts:
+      - staging-BR-CORE-01      # dual-role: also in br_core
+
+  - name: ch_av
+    inventory: "Network Switches Inventory"
+    description: "Chicago AV switches"
+    hosts:
+      - staging-CH-AV-01        # dual-role: also in ch_distro
+
+  - name: ht_av
+    inventory: "Network Switches Inventory"
+    description: "Houston AV switches"
+    hosts:
+      - staging-HT-AV-01
+
+  - name: ld_av
+    inventory: "Network Switches Inventory"
+    description: "London AV switches"
+    hosts:
+      - staging-LD-ACC30-01     # removed from ld_distro in source — AV only
+
+  - name: ny_av
+    inventory: "Network Switches Inventory"
+    description: "New York AV switches"
+    hosts:
+      - staging-NY-ACC4-01
+
+  - name: sf_av
+    inventory: "Network Switches Inventory"
+    description: "San Francisco AV switches"
+    hosts:
+      - staging-SF-AV-01
+
+  # ============================================================================
+  # TIER 2 — Switch tier container groups
+  # No hosts, no children at this point — pure named containers.
+  # Their membership under ios/switches is wired in Tier 4.
+  # Must exist before Tier 4 references them via children:.
+  # ============================================================================
+
+  - name: office_core_switches
+    inventory: "Network Switches Inventory"
+    description: "Office core layer switches"
+
+  - name: office_distro_switches
+    inventory: "Network Switches Inventory"
+    description: "Office distribution layer switches"
+
+  - name: office_av_switches
+    inventory: "Network Switches Inventory"
+    description: "Office AV (audio-visual) switches"
+
+  # ============================================================================
+  # TIER 3 — Location aggregate groups ({location}_all)
+  # Use children: to pull in the Tier 1 functional groups.
+  # All referenced child groups already exist (defined in Tier 1 above).
+  # ============================================================================
+
+  - name: bo_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — Boston office"
     children:
-      - thousand_eyes
+      - bo_core
 
-  - name: general
-    inventory: "Network Automation Inventory"
-    description: "General purpose hosts"
-    parents:
-      - by_function
+  - name: ch_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — Chicago office"
+    children:
+      - ch_core
+      - ch_distro
+      - ch_av
 
-  - name: splunk
-    inventory: "Network Automation Inventory"
-    description: "All Splunk infrastructure nodes"
-    parents:
-      - by_function
+  - name: dc_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — Washington DC office"
+    children:
+      - dc_core
+      - dc_distro
 
-  - name: splunk_indexers
-    inventory: "Network Automation Inventory"
-    description: "Splunk indexer nodes"
-    parents:
-      - splunk
+  - name: ny_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — New York office"
+    children:
+      - ny_core
+      - ny_distro
 
-  - name: splunk_search_heads
-    inventory: "Network Automation Inventory"
-    description: "Splunk search head nodes"
-    parents:
-      - splunk
+  - name: ht_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — Houston office"
+    children:
+      - ht_core
+      - ht_av
 
-  - name: splunk_forwarders
-    inventory: "Network Automation Inventory"
-    description: "Splunk forwarder (syslog) nodes"
-    parents:
-      - splunk
+  - name: la_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — Los Angeles office"
+    children:
+      - la_core
+      - la_distro
 
-  - name: splunk_heavy_forwarders
-    inventory: "Network Automation Inventory"
-    description: "Splunk heavy forwarder / stream nodes"
-    parents:
-      - splunk
+  - name: sf_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — San Francisco office"
+    children:
+      - sf_core
+      - sf_distro
+      - sf_av
 
-  - name: splunk_masters
-    inventory: "Network Automation Inventory"
-    description: "Splunk cluster master nodes"
-    parents:
-      - splunk
+  - name: sv_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — Silicon Valley office"
+    children:
+      - sv_core
+      - sv_distro
 
-  - name: zoomprov
-    inventory: "Network Automation Inventory"
-    description: "Zoom provisioning nodes"
-    parents:
-      - by_function
+  - name: sa_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — Santa Ana office"
+    children:
+      - sa_core
+      - sa_distro
 
-  # ── by_region ──────────────────────────────────────────────────────────────
-  - name: by_region
-    inventory: "Network Automation Inventory"
-    description: "Hosts grouped by geographic region"
+  - name: ld_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — London office"
+    children:
+      - ld_core
+      - ld_distro
+      - ld_av
 
-  - name: US
-    inventory: "Network Automation Inventory"
-    description: "United States region"
-    parents:
-      - by_region
+  - name: br_all
+    inventory: "Network Switches Inventory"
+    description: "All switches — Brussels office"
+    children:
+      - br_core
+      # br_av intentionally omitted — staging-BR-CORE-01 already
+      # reachable via br_all -> br_core, matching source inventory
 
-  - name: US1
-    inventory: "Network Automation Inventory"
-    description: "US Region 1 (primary US DC)"
-    parents:
-      - US
+  # ============================================================================
+  # TIER 4 — Region and top-level container groups
+  # Must be defined last — all children already exist from Tiers 1-3 above.
+  # ============================================================================
 
-  - name: US1_DMZ10
-    inventory: "Network Automation Inventory"
-    description: "US Region 1 DMZ segment 10"
-    parents:
-      - US
+  - name: us_region_east
+    inventory: "Network Switches Inventory"
+    description: "US East coast office locations"
+    children:
+      - bo_all
+      - ch_all
+      - dc_all
+      - ny_all
 
-  - name: US2
-    inventory: "Network Automation Inventory"
-    description: "US Region 2"
-    parents:
-      - US
+  - name: us_region_west
+    inventory: "Network Switches Inventory"
+    description: "US West coast office locations"
+    children:
+      - ht_all
+      - la_all
+      - sf_all
+      - sv_all
+      - sa_all
 
-  - name: US3
-    inventory: "Network Automation Inventory"
-    description: "US Region 3"
-    parents:
-      - US
+  - name: eu_region
+    inventory: "Network Switches Inventory"
+    description: "All EU office locations"
+    children:
+      - ld_all
+      - br_all
 
-  - name: EMEA
-    inventory: "Network Automation Inventory"
-    description: "Europe, Middle East & Africa region"
-    parents:
-      - by_region
+  - name: us_region
+    inventory: "Network Switches Inventory"
+    description: "All US office locations"
+    children:
+      - us_region_east
+      - us_region_west
 
-  - name: EU1
-    inventory: "Network Automation Inventory"
-    description: "EMEA Region 1"
-    parents:
-      - EMEA
+  - name: by_location
+    inventory: "Network Switches Inventory"
+    description: "Top-level container — hosts grouped by geographic location"
+    children:
+      - us_region
+      - eu_region
 
-  - name: EU2
-    inventory: "Network Automation Inventory"
-    description: "EMEA Region 2"
-    parents:
-      - EMEA
+  - name: switches
+    inventory: "Network Switches Inventory"
+    description: "All IOS switch devices"
+    children:
+      - office_core_switches
+      - office_distro_switches
+      - office_av_switches
 
-  - name: APAC
-    inventory: "Network Automation Inventory"
-    description: "Asia-Pacific region"
-    parents:
-      - by_region
+  - name: ios
+    inventory: "Network Switches Inventory"
+    description: "All IOS managed devices"
+    children:
+      - switches
 
-  - name: AS1
-    inventory: "Network Automation Inventory"
-    description: "APAC Region 1"
-    parents:
-      - APAC
-
-  - name: AS2
-    inventory: "Network Automation Inventory"
-    description: "APAC Region 2"
-    parents:
-      - APAC
-
-  # ── py3_hosts ──────────────────────────────────────────────────────────────
-  - name: py3_hosts
-    inventory: "Network Automation Inventory"
-    description: "Hosts using Python 3 interpreter"
-    variables:
-      ansible_python_interpreter: /usr/bin/python3
-
-# ---------------------------------------------------------------------------
-# HOSTS
-# Each unique hostname from the source inventory, with variables where set.
-# Group membership is driven by controller_groups above; hosts just need to
-# exist in the inventory — AAP resolves group membership via the groups' own
-# host lists or via the hosts' `groups` key depending on module version.
-# Using the `groups` key here for explicit, readable membership.
-# ---------------------------------------------------------------------------
+# ── STEP 3: Hosts ─────────────────────────────────────────────────────────────
+# Hosts with no host-specific variables are listed with name + inventory only.
+# Group membership is handled entirely by the hosts: keys on controller_groups.
+# Only hosts with ansible_host overrides need the variables: block.
 controller_hosts:
 
-  # ── iPerf nodes ────────────────────────────────────────────────────────────
-  - name: as1iperf01
-    inventory: "Network Automation Inventory"
-    groups:
-      - iperf
-      - AS1
-      - py3_hosts
+  # ── Core switches ──────────────────────────────────────────────────────────
+  - name: staging-BO-CORE-01
+    inventory: "Network Switches Inventory"
 
-  - name: as2iperf01
-    inventory: "Network Automation Inventory"
-    groups:
-      - iperf
-      - AS2
-      - py3_hosts
+  - name: staging-BR-CORE-01
+    inventory: "Network Switches Inventory"
+    # Dual-role: member of both br_core and br_av
 
-  - name: us2iperf01
-    inventory: "Network Automation Inventory"
-    groups:
-      - iperf
-      - US2
-      - py3_hosts
-
-  - name: eu1iperf01
-    inventory: "Network Automation Inventory"
-    groups:
-      - iperf
-      - EU1
-      - py3_hosts
-
-  - name: eu2iperf01
-    inventory: "Network Automation Inventory"
-    groups:
-      - iperf
-      - EU2
-      - py3_hosts
-
-  # ── ThousandEyes nodes ─────────────────────────────────────────────────────
-  - name: eu1tea01
-    inventory: "Network Automation Inventory"
-    groups:
-      - thousand_eyes
-      - EU1
-      - py3_hosts
-
-  - name: eu2tea01
-    inventory: "Network Automation Inventory"
-    groups:
-      - thousand_eyes
-      - EU2
-      - py3_hosts
-
-  - name: as1tea01
-    inventory: "Network Automation Inventory"
-    groups:
-      - thousand_eyes
-      - AS1
-      - py3_hosts
-
-  - name: as2tea01
-    inventory: "Network Automation Inventory"
+  - name: staging-CH-CORE-01
+    inventory: "Network Switches Inventory"
     variables:
-      ansible_host: "10.205.29.20"   # explicit ansible_host set in source inventory
-    groups:
-      - thousand_eyes
-      - AS2
-      - py3_hosts
+      ansible_host: "131.239.178.59"
 
-  - name: us1tea01
-    inventory: "Network Automation Inventory"
-    groups:
-      - thousand_eyes
-      - US1
-      - py3_hosts
+  - name: staging-DC-CORE-01
+    inventory: "Network Switches Inventory"
 
-  - name: us2tea01
-    inventory: "Network Automation Inventory"
-    groups:
-      - thousand_eyes
-      - US2
-      - py3_hosts
+  - name: staging-HT-CORE-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.22.0.11"
 
-  - name: us3tea01
-    inventory: "Network Automation Inventory"
-    groups:
-      - thousand_eyes
-      - US3
-      - py3_hosts
+  - name: staging-LA-CORE-01
+    inventory: "Network Switches Inventory"
 
-  - name: us2avstestvm01
-    inventory: "Network Automation Inventory"
-    groups:
-      - thousand_eyes
-      - py3_hosts
+  - name: staging-LD-CORE-01
+    inventory: "Network Switches Inventory"
 
-  # ── EVE-NG ─────────────────────────────────────────────────────────────────
-  - name: us1deveveng01
-    inventory: "Network Automation Inventory"
-    groups:
-      - eveng
-      - US1
+  - name: staging-NY-CORE-01
+    inventory: "Network Switches Inventory"
 
-  # ── Tower / AAP ────────────────────────────────────────────────────────────
-  - name: us1atower02
-    inventory: "Network Automation Inventory"
-    groups:
-      - tower
-      - US1
-      - py3_hosts
+  - name: staging-SF-CORE-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.25.0.11"
 
-  # ── GitLab ─────────────────────────────────────────────────────────────────
-  - name: us1gitlab01
-    inventory: "Network Automation Inventory"
-    groups:
-      - gitlab
-      - US1
-      - py3_hosts
+  - name: staging-SV-CORE-01
+    inventory: "Network Switches Inventory"
 
-  # ── Chronicle / Docker ─────────────────────────────────────────────────────
-  # us1gc01 appears in both `chronicle` and `docker` in the source inventory
-  - name: us1gc01
-    inventory: "Network Automation Inventory"
-    groups:
-      - chronicle
-      - docker
-      - US1
-      - py3_hosts
+  - name: staging-SA-CORE-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "50.191.193.60"
 
-  # ── General hosts ──────────────────────────────────────────────────────────
-  - name: us1netweb01
-    inventory: "Network Automation Inventory"
-    groups:
-      - general
-      - US1
-      - py3_hosts
+  # ── Chicago distro / AV ────────────────────────────────────────────────────
+  - name: staging-CH-ACC34-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.19.2.14"
 
-  - name: us1webnotification01
-    inventory: "Network Automation Inventory"
-    groups:
-      - general
-      - US1_DMZ10
+  - name: staging-CH-ACC35-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "131.239.178.60"
 
-  - name: us3extgwc01
-    inventory: "Network Automation Inventory"
-    groups:
-      - general
-      - US3
-      - py3_hosts
+  - name: staging-CH-AV-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.19.2.3"
+    # Dual-role: member of both ch_distro and ch_av
 
-  # ── Splunk stack ───────────────────────────────────────────────────────────
-  - name: us1sesidx01
-    inventory: "Network Automation Inventory"
-    groups:
-      - splunk_indexers
-      - US1
+  # ── DC distro ──────────────────────────────────────────────────────────────
+  - name: staging-DC-ACC1E-01
+    inventory: "Network Switches Inventory"
 
-  - name: us1sesidx02
-    inventory: "Network Automation Inventory"
-    groups:
-      - splunk_indexers
-      - US1
+  - name: staging-DC-ACC3E-01
+    inventory: "Network Switches Inventory"
 
-  - name: us1sesidx03
-    inventory: "Network Automation Inventory"
-    groups:
-      - splunk_indexers
-      - US1
+  - name: staging-DC-ACC3E-02
+    inventory: "Network Switches Inventory"
 
-  - name: us1sessearch01
-    inventory: "Network Automation Inventory"
-    groups:
-      - splunk_search_heads
-      - US1
+  - name: staging-DC-ACC6E-01
+    inventory: "Network Switches Inventory"
 
-  - name: us1syslog02
-    inventory: "Network Automation Inventory"
-    groups:
-      - splunk_forwarders
-      - US1
+  - name: staging-DC-ACC6E-02
+    inventory: "Network Switches Inventory"
 
-  - name: us1sesstream01
-    inventory: "Network Automation Inventory"
-    groups:
-      - splunk_heavy_forwarders
-      - US1
+  - name: staging-DC-ACC6W-01
+    inventory: "Network Switches Inventory"
 
-  - name: us1sesmaster01
-    inventory: "Network Automation Inventory"
-    groups:
-      - splunk_masters
-      - US1
+  - name: staging-DC-ACC8E-01
+    inventory: "Network Switches Inventory"
 
-  # ── Zoom provisioning ──────────────────────────────────────────────────────
-  - name: us1zoomprov01
-    inventory: "Network Automation Inventory"
-    groups:
-      - zoomprov
-      - US1
+  - name: staging-DC-ACC8W-01
+    inventory: "Network Switches Inventory"
 
-  - name: us3zoomprov01
-    inventory: "Network Automation Inventory"
-    groups:
-      - zoomprov
-      - US3
+  - name: staging-DC-ACC11E-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-DC-ACC11E-02
+    inventory: "Network Switches Inventory"
+
+  - name: staging-DC-ACC11W-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-DC-ACC11W-02
+    inventory: "Network Switches Inventory"
+
+  # ── LA distro ─────────────────────────────────────────────────────────────
+  - name: staging-LA-ACC43-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-LA-ACC44-01
+    inventory: "Network Switches Inventory"
+
+  # ── London distro / AV ────────────────────────────────────────────────────
+  - name: staging-LD-ACC25-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-LD-ACC28-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-LD-ACC30-01
+    inventory: "Network Switches Inventory"
+    # In ld_av only — intentionally removed from ld_distro in source
+
+  # ── NY distro / AV ────────────────────────────────────────────────────────
+  - name: staging-NY-ACC2-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC3-01
+    inventory: "Network Switches Inventory"
+
+  - name: NY-AV4-01
+    inventory: "Network Switches Inventory"
+    # Intentionally no staging- prefix — matches source inventory exactly
+
+  - name: staging-NY-ACC4-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC5-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC6-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC7-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC8-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC9-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC10-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC11-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC12-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-NY-ACC14-01
+    inventory: "Network Switches Inventory"
+
+  # ── SA distro ─────────────────────────────────────────────────────────────
+  - name: staging-SA-ACC36-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.14.254.2"
+
+  # ── SF distro / AV ────────────────────────────────────────────────────────
+  - name: staging-SF-ACC9-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.25.2.13"
+
+  - name: staging-SF-ACC10-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.25.2.14"
+
+  - name: staging-SF-AV-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.25.2.3"
+
+  # ── SV distro ─────────────────────────────────────────────────────────────
+  - name: staging-SV-ACC5-01
+    inventory: "Network Switches Inventory"
+
+  - name: staging-SV-ACC6-01
+    inventory: "Network Switches Inventory"
+
+  # ── Houston AV ────────────────────────────────────────────────────────────
+  - name: staging-HT-AV-01
+    inventory: "Network Switches Inventory"
+    variables:
+      ansible_host: "10.22.2.3"

@@ -26,10 +26,20 @@ all:
                   hosts:
                     staging-BR-CORE-01:
 
+                ch_core:
+                  hosts:
+                    staging-CH-CORE-01:
+                      ansible_host: 131.239.178.59
+
                 dc_core:
                   hosts:
                     staging-DC-CORE-01:
 
+                ht_core:
+                  hosts:
+                    staging-HT-CORE-01:
+                      ansible_host: 10.22.0.11
+                
                 la_core:
                   hosts:
                     staging-LA-CORE-01:
@@ -45,6 +55,7 @@ all:
                 sf_core:
                   hosts:
                     staging-SF-CORE-01:
+                      ansible_host: 10.25.0.11
 
                 sv_core:
                   hosts:
@@ -58,6 +69,14 @@ all:
             office_distro_switches:
               children:
 
+                ch_distro:
+                  hosts:
+                    staging-CH-ACC34-01:
+                      ansible_host: 10.19.2.14
+                    staging-CH-ACC35-01: 
+                      ansible_host: 131.239.178.60
+                    staging-CH-AV-01:
+                      ansible_host: 10.19.2.3                
                 dc_distro:
                   hosts:
                     staging-DC-ACC1E-01: #C9407R
@@ -102,15 +121,52 @@ all:
                     staging-NY-ACC12-01:
                     staging-NY-ACC14-01:
 
+                sa_distro:
+                  hosts:
+                    staging-SA-ACC36-01:
+                      ansible_host: 10.14.254.2
+                
                 sf_distro:
                   hosts:
                     staging-SF-ACC9-01:
-                    staging-SF-ACC10-01:                
+                      ansible_host: 10.25.2.13
+                    staging-SF-ACC10-01:      
+                      ansible_host: 10.25.2.14          
 
                 sv_distro:
                   hosts:
                     staging-SV-ACC5-01: #C9407R
                     staging-SV-ACC6-01: #C9407R
+
+            office_av_switches:
+              children:
+
+                br_av:
+                  hosts:
+                    staging-BR-CORE-01:
+
+                ch_av:
+                  hosts:
+                    staging-CH-AV-01:
+                      ansible_host: 10.19.2.3
+                
+                ld_av:
+                  hosts:
+                    staging-LD-ACC30-01:
+
+                ny_av:
+                  hosts:
+                    staging-NY-ACC4-01:
+
+                ht_av:
+                  hosts:
+                    staging-HT-AV-01:
+                      ansible_host: 10.22.2.3
+
+                sf_av:
+                  hosts:
+                    staging-SF-AV-01:
+                      ansible_host: 10.25.2.3
 
     by_location:
       children:
@@ -126,12 +182,19 @@ all:
 
                     bo_core:
 
+                ch_all:
+                  children:
+
+                    ch_core:
+                    ch_distro:
+                    ch_av:
+                
                 dc_all:    
                   children:
 
                     dc_core:
                     dc_distro:
-
+                
                 ny_all:
                   children:
 
@@ -140,6 +203,12 @@ all:
 
             us_region_west:
               children:
+
+                ht_all:
+                  children:
+
+                    ht_core:
+                    ht_av:
 
                 la_all:
                   children:
@@ -152,6 +221,7 @@ all:
 
                     sf_core:
                     sf_distro:
+                    sf_av:
 
                 sv_all:
                   children:
@@ -163,6 +233,7 @@ all:
                   children:
 
                     sa_core:
+                    sa_distro:
 
         eu_region:
           children:
