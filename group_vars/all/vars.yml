@@ -1,0 +1,41 @@
+# --- Ansible Galaxy ---
+ansible_galaxy_uname: "{{ vault_ansible_galaxy_uname }}"
+ansible_galaxy_pass: "{{ vault_ansible_galaxy_pass }}"
+
+# --- Machine Credentials ---
+ansible_worker_uname: "{{ vault_ansible_worker_uname }}"
+ansible_worker_pass: "{{ vault_ansible_worker_pass }}"
+
+ansible_worker_linux_uname: "{{ vault_ansible_worker_linux_uname }}"
+ansible_worker_linux_pass: "{{ vault_ansible_worker_linux_pass }}"
+
+demo_credential_uname: "{{ vault_demo_credential_uname }}"
+demo_credential_pass: "{{ vault_demo_credential_pass }}"
+
+linux_admin_ansible_uname: "{{ vault_linux_admin_ansible_uname }}"
+linux_admin_ansible_pass: "{{ vault_linux_admin_ansible_pass }}"
+
+console_uname: "{{ vault_console_uname }}"
+console_pass: "{{ vault_console_pass }}"
+
+console_prompt_uname: "{{ vault_console_prompt_uname }}"
+console_prompt_pass: "{{ vault_console_prompt_pass }}"
+
+setup_uname: "{{ vault_setup_uname }}"
+setup_pass: "{{ vault_setup_pass }}"
+
+# --- Vault Credentials ---
+ansible_worker_vault_pass: "{{ vault_ansible_worker_vault_pass }}"
+linux_admin_vault_pass: "{{ vault_linux_admin_vault_pass }}"
+
+# --- Network Credentials ---
+avanlife_uname: "{{ vault_avanlife_uname }}"
+avanlife_pass: "{{ vault_avanlife_pass }}"
+
+# --- Cisco Credentials ---
+brokerdess_uname: "{{ vault_brokerdess_uname }}"
+brokerdess_pass: "{{ vault_brokerdess_pass }}"
+
+# --- Source Control ---
+us7github01_uname: "{{ vault_us7github01_uname }}"
+us7github01_pass: "{{ vault_us7github01_pass }}"
