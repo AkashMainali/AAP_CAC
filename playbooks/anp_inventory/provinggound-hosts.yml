@@ -1,25 +1,30 @@
 ---
+# provinggound-hosts.yml
+# Proving ground / lab network inventory
+# Fixed:
+#   1. nxos.vars: null -> vars: {}  (ambiguous empty key caused all parsers to reject file)
+#   2. routers group corrected to be a child of ios, sibling of switches (not nested under switches)
 
 all:
-
   children:
+
     ios:
-
       children:
+
         switches:
-
           children:
-            office_core_switches:
 
-              children:               
+            office_core_switches:
+              children:
+
                 proving_core:
                   hosts:
                     proving-core-01:
                     proving-core-02:
 
             office_distro_switches:
-
               children:
+
                 proving_distro:
                   hosts:
                     pg-acc41-01:
@@ -27,6 +32,7 @@ all:
 
         routers:
           children:
+
             porving_routers:
               hosts:
                 proving-4431-wan:
@@ -35,12 +41,12 @@ all:
                 pg-cedge-02:
 
     nxos:
-      vars:
-
+      vars: {}
       children:
-        nexus_switches:
 
+        nexus_switches:
           children:
+
             proving_nx_cores:
               hosts:
                 proving-nx-core-01:
