@@ -34,82 +34,43 @@
 #     role: "admin"
 
 ---
-# =============================================================================
-# configs/11-provinggound-inventory.yml
-# AAP 2.6 Configuration-as-Code — Project-Sourced Proving Ground Inventory
-#
-# Source inventory file (note the intentional double-g typo in the filename):
-#   https://github.com/AkashMainali/AAP_CAC/blob/main/playbooks/anp_inventory/provinggound-hosts.yml
-#
-# What this file creates in AAP (in dispatch order):
-#   1. controller_inventories       — Inventory container (no static hosts/groups)
-#   2. controller_inventory_sources — Binds the inventory to the project file path
-#
-# NOTE: controller_projects is NOT defined here.
-#   The project "AAP CaC - NetOps" already exists from
-#   configs/09-netops-staging-inventory.yml. All three inventory files
-#   (netops-staging, netops-linux, provinggound) live in the same repo
-#   and are served by the same project.
-#
-# Prerequisites that must already exist in AAP before running:
-#   - Organisation : "Default"
-#   - Project      : "AAP CaC - NetOps"  (created by 09-netops-staging-inventory.yml)
-#
-# What the SCM source file provides automatically on sync:
-#   Platform groups : ios, nxos
-#   Switch tiers    : switches, office_core_switches, office_distro_switches
-#   Router tier     : routers
-#   Nexus tier      : nexus_switches
-#   Leaf groups     : proving_core, proving_distro, porving_routers,
-#                     proving_nx_cores
-#   Hosts (9 total) : proving-core-01, proving-core-02,
-#                     pg-acc41-01, pg-acc42-01,
-#                     proving-4431-wan, proving-4331-cpe,
-#                     pg-cedge-01, pg-cedge-02,
-#                     proving-nx-core-01 (hsrp_primary: true),
-#                     proving-nx-core-02 (hsrp_secondary: true)
-#
-# !! IMPORTANT — Source file has a typo in its filename !!
-#   The file is named  provinggound-hosts.yml  (double-g, missing 'r')
-#   The source_path below matches the filename EXACTLY as it exists in Git.
-#   Do not correct the spelling in source_path or the sync will fail with
-#   "No such file or directory".
-# =============================================================================
-
-
-# ── STEP 1: Inventory container ───────────────────────────────────────────────
-controller_inventories:
-  - name: "Proving Ground Inventory"
+controller_projects:
+  - name: "AAP CaC - NetOps"
     organization: "Default"
-    description: >-
-      Network proving ground / lab environment — IOS switches, IOS routers,
-      and NX-OS Nexus cores. Sourced from provinggound-hosts.yml in Git.
-      Note: source filename has a typo (provinggound) — this is intentional
-      to match the actual filename in the repository.
+    description: "Ansible Automation Platform Configuration-as-Code repository — NetOps team"
+    scm_type: git
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    scm_branch: "main"
+    # No credential needed — AkashMainali/AAP_CAC is a public GitHub repository
+    scm_clean: true
+    scm_delete_on_update: false
+    scm_track_submodules: false
+    scm_update_on_launch: false
+    allow_override: false
+
+controller_inventories:
+  - name: "NetOps Linux Hosts"
+    organization: "Default"
 
 
-# ── STEP 2: Inventory Source ──────────────────────────────────────────────────
+
 controller_inventory_sources:
   - name: "Proving Ground Inventory Source"
     inventory: "Proving Ground Inventory"
     description: >-
-      Syncs hosts and groups from provinggound-hosts.yml in the AAP CaC repo.
+      Syncs hosts and groups from netops-production-hosts.yml in the AAP CaC repo.
       Covers IOS core/distro switches, IOS routers (WAN/CPE/cEdge),
       and NX-OS Nexus core switches with HSRP role host vars.
-
     source: scm
     source_project: "AAP CaC - NetOps"
-    source_path: "playbooks/anp_inventory/provinggound-hosts.yml"
+    source_path: "playbooks/anp_inventory/netops-production-hosts.yml"
     #                                     ^^^^^^^^^^^
     #   Intentional double-g typo — matches the actual filename in Git exactly.
     #   If this is ever corrected in the repo, update this path to match.
-
     # Sync behaviour
     update_on_launch: true
     update_cache_timeout: 0
-
     # Overwrite controls
     overwrite: true
     overwrite_vars: true
-
     verbosity: 1
