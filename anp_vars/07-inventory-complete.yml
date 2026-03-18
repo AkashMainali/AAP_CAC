@@ -84,8 +84,6 @@ controller_inventory_sources:
     overwrite_vars: true
     verbosity: 1
 
-
-
   - name: "Proving Ground Inventory Source"
     inventory: "Proving Ground Inventory"
     description: >-

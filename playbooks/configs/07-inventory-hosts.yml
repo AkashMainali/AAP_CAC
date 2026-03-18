@@ -55,9 +55,9 @@ controller_inventories:
       across US, EMEA, and APAC regions.
     variables: {}
 
-  - name: "NetOps Linux Inventory"
+  - name: "NetOps Production Inventory"
     organization: "Default"
-    
+
   - name: "NetOps Staging Inventory"
     organization: "Default"
     description: "IOS office switches — staging. Sourced from netops-staging-hosts.yml in Git."
@@ -117,8 +117,6 @@ controller_inventory_sources:
     overwrite: true
     overwrite_vars: true
     verbosity: 1
-
-
 
   - name: "Proving Ground Inventory Source"
     inventory: "Proving Ground Inventory"
