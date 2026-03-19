@@ -2,10 +2,8 @@
 # aap_organizations:
 #   - name: "RHEL"
 #     description: "Red Hat Enterprise Linux Systems"
-
 #   - name: "Windows"
 #     description: "Windows Systems Organization"
-
 #   - name: "Networking"
 #     description: "Networking Systems Organization"
 
