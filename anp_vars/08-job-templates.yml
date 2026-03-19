@@ -9,15 +9,6 @@ controller_templates:
     project: "RHEL project"
     playbook: "linux_ping.yml"
     credentials: ["RHEL-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "RHEL Dev Survey"
-      description: "Ping parameters for Development"
-      spec:
-        - question_name: "Reason for Ping"
-          variable: "ping_reason"
-          type: "text"
-          required: true
 
   - name: "RHEL-Ping-Test"
     organization: "RHEL"
@@ -25,15 +16,7 @@ controller_templates:
     project: "RHEL project"
     playbook: "linux_ping.yml"
     credentials: ["RHEL-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "RHEL Test Survey"
-      description: "Ping parameters for Testing"
-      spec:
-        - question_name: "Ticket Number"
-          variable: "ticket_id"
-          type: "text"
-          required: true
+
 
   - name: "RHEL-Ping-Prod"
     organization: "RHEL"
@@ -41,15 +24,7 @@ controller_templates:
     project: "RHEL project"
     playbook: "linux_ping.yml"
     credentials: ["RHEL-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "RHEL Prod Survey"
-      description: "CRITICAL: Production Ping"
-      spec:
-        - question_name: "Change Request Number"
-          variable: "cr_number"
-          type: "text"
-          required: true
+
 
   # ==========================================
   # WINDOWS ORGANIZATION TEMPLATES
@@ -60,16 +35,7 @@ controller_templates:
     project: "Windows Project"
     playbook: "win_ping.yml"
     credentials: ["Windows-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "Windows Dev Survey"
-      description: "Windows Dev Ping"
-      spec: &win_spec
-        - question_name: "Environment"
-          variable: "target_env"
-          type: "text"
-          default: "Development"
-          required: true
+
 
   - name: "Windows-Ping-Test"
     organization: "Windows"
@@ -77,11 +43,7 @@ controller_templates:
     project: "Windows Project"
     playbook: "win_ping.yml"
     credentials: ["Windows-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "Windows Test Survey"
-      description: "Windows Test Ping"
-      spec: *win_spec
+
 
   - name: "Windows-Ping-Prod"
     organization: "Windows"
@@ -89,11 +51,7 @@ controller_templates:
     project: "Windows Project"
     playbook: "win_ping.yml"
     credentials: ["Windows-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "Windows Prod Survey"
-      description: "Windows Production Ping"
-      spec: *win_spec
+ 
 
 # ==========================================
 # SCHEDULES FOR THE TEMPLATES
@@ -114,7 +72,7 @@ controller_schedules:
     # Fixed: Added INTERVAL=1 and corrected the RRULE prefix logic
     rrule: "DTSTART:20260308T000000Z RRULE:FREQ=WEEKLY;BYDAY=SU;INTERVAL=1"
 
-    
+
 controller_roles:
   # RHEL Operators get access to all 3 RHEL templates
   - team: "RHEL-Operator"
