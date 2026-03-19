@@ -1,37 +1,3 @@
-# ---
-# controller_inventories:
-#   - name: "RHEL Inventory"
-#     organization: "RHEL"
-#     description: "Inventory for RHEL 10 Managed Nodes"
-#     variables:
-#       ansible_python_interpreter: /usr/bin/python3
-
-#   - name: "Windows Inventory"
-#     organization: "Windows"
-#     description: "Inventory for Windows Managed Nodes"
-
-# controller_hosts:
-#   # RHEL Hosts
-#   - name: "rhel-node-01.example.com"
-#     inventory: "RHEL Inventory"
-#     variables:
-#       ansible_host: "10.0.1.50"
-
-#   # Windows Hosts
-#   - name: "win-node-01.example.com"
-#     inventory: "Windows Inventory"
-#     variables:
-#       ansible_host: "10.0.2.50"
-#       ansible_connection: winrm
-#       ansible_winrm_server_cert_validation: ignore
-
-# controller_roles:
-#   - team: "RHEL-admin"
-#     inventory: "RHEL Inventory"
-#     role: "admin"
-#   - team: "Windows-Admin"
-#     inventory: "Windows Inventory"
-#     role: "admin"
 ---
 controller_projects:
   - name: "AAP CaC - NetOps"
@@ -49,18 +15,17 @@ controller_projects:
 controller_inventories:
   - name: "NetOps Linux Inventory"
     organization: "Default"
-    description: >-
-      NetOps Linux managed nodes — sourced from netops-linux-hosts.yml in Git.
-      Covers iperf, EVE-NG, Tower, GitLab, Splunk stack, Zoom provisioning nodes
-      across US, EMEA, and APAC regions.
+    description: "NetOps Linux managed nodes"
     variables: {}
 
   - name: "NetOps Production Inventory"
     organization: "Default"
+    description: "NetOps Production managed nodes"
+    variables: {}
 
   - name: "NetOps Staging Inventory"
     organization: "Default"
-    description: "IOS office switches — staging. Sourced from netops-staging-hosts.yml in Git."
+    description: "IOS office switches - staging"
     variables:
       ansible_network_os: ios
       ansible_connection: network_cli
@@ -69,34 +34,31 @@ controller_inventories:
 
   - name: "Proving Ground Inventory"
     organization: "Default"
-    description: >-
-      Network proving ground / lab environment — IOS switches, IOS routers,
-      and NX-OS Nexus cores. Sourced from provinggound-hosts.yml in Git.
-      Note: source filename has a typo (provinggound) — this is intentional
-      to match the actual filename in the repository.
+    description: "Network proving ground / lab environment"
+    variables: {}
+
+  # --- Added for Testing ---
+  - name: "Default"
+    organization: "Default"
+    description: "Default inventory for job templates"
+    variables: {}
 
 controller_inventory_sources:
   - name: "NetOps Linux Inventory Source"
     inventory: "NetOps Linux Inventory"
-    description: >-
-      Syncs hosts and groups from netops-linux-hosts.yml in the AAP CaC repo.
-      Groups: by_function (iperf/eveng/tower/gitlab/general/splunk/zoomprov),
-      by_region (US/EMEA/APAC sub-regions), py3_hosts.
+    description: "Syncs hosts from netops-linux-hosts.yml"
     source: scm
     source_project: "AAP CaC - NetOps"
     source_path: "playbooks/anp_inventory/netops-linux-hosts.yml"
-    update_on_launch: true        # re-sync from Git before every job run
-    update_cache_timeout: 0       # 0 = always re-sync; increase (seconds) to throttle
+    update_on_launch: true
+    update_cache_timeout: 0
     overwrite: true
     overwrite_vars: true
     verbosity: 1
 
   - name: "NetOps Production Inventory Source"
     inventory: "NetOps Production Inventory"
-    description: >-
-      Syncs hosts and groups from netops-production-hosts.yml in the AAP CaC repo.
-      Covers IOS core/distro switches, IOS routers (WAN/CPE/cEdge),
-      and NX-OS Nexus core switches with HSRP role host vars.
+    description: "Syncs hosts from netops-production-hosts.yml"
     source: scm
     source_project: "AAP CaC - NetOps"
     source_path: "playbooks/anp_inventory/netops-production-hosts.yml"
@@ -108,7 +70,7 @@ controller_inventory_sources:
 
   - name: "NetOps Staging Inventory Source"
     inventory: "NetOps Staging Inventory"
-    description: "Syncs hosts and groups from netops-staging-hosts.yml in the AAP CaC repo"
+    description: "Syncs hosts from netops-staging-hosts.yml"
     source: scm
     source_project: "AAP CaC - NetOps"
     source_path: "playbooks/anp_inventory/netops-staging-hosts.yml"
@@ -120,10 +82,7 @@ controller_inventory_sources:
 
   - name: "Proving Ground Inventory Source"
     inventory: "Proving Ground Inventory"
-    description: >-
-      Syncs hosts and groups from provinggound-hosts.yml in the AAP CaC repo.
-      Covers IOS core/distro switches, IOS routers (WAN/CPE/cEdge),
-      and NX-OS Nexus core switches with HSRP role host vars.
+    description: "Syncs hosts from provinggound-hosts.yml"
     source: scm
     source_project: "AAP CaC - NetOps"
     source_path: "playbooks/anp_inventory/provinggound-hosts.yml"
