@@ -5,7 +5,7 @@ controller_projects:
     organization: "Default"
     scm_type: "git"
     scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
-    wait: true
+    wait: false
     scm_update_on_launch: true
     scm_clean: true
 
