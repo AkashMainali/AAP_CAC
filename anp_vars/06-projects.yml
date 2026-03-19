@@ -1,35 +1,52 @@
 ---
 controller_projects:
-  # --- RHEL Organization Project ---
-  - name: "RHEL project"
-    organization: "RHEL"
+  # --- Demo Project ---
+  - name: "Demo Project"
+    organization: "Default"
     scm_type: "git"
-    scm_url: "https://github.com/AkashMainali/AAP-Linux-demo.git"
-    scm_credential: "RHEL-GIT Creds"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    wait: false
+    scm_update_on_launch: true
+    scm_clean: true
+
+  # --- Linux Projects ---
+  - name: "linux-inventories"
+    organization: "Default"
+    scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     wait: true
     scm_update_on_launch: true
     scm_clean: true
 
-  # --- Windows Organization Project ---
-  - name: "Windows Project"
-    organization: "Windows"
+  - name: "linux-playbooks"
+    organization: "Default"
     scm_type: "git"
-    scm_url: "https://github.com/AkashMainali/AAP-Windows-demo.git"
-    scm_credential: "Windows-GIT Creds"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     wait: true
     scm_update_on_launch: true
     scm_clean: true
-    
-controller_roles:
-  # --- RBAC for Projects ---
-  - team: "RHEL-admin"
-    project: "RHEL project"
-    role: "admin"
 
-  - team: "Windows-Admin"
-    project: "Windows Project"
-    role: "admin"
+  # --- Netops Projects ---
+  - name: "netops-inventory"
+    organization: "Default"
+    scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    wait: true
+    scm_update_on_launch: true
+    scm_clean: true
 
-  - team: "RHEL-Operator"
-    project: "RHEL project"
-    role: "use"
+  - name: "netops-playbooks"
+    organization: "Default"
+    scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    wait: true
+    scm_update_on_launch: true
+    scm_clean: true
+
+  - name: "network-segmentation-automation"
+    organization: "Default"
+    scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    wait: true
+    scm_update_on_launch: true
+    scm_clean: true
