@@ -1,139 +1,577 @@
 ---
-controller_templates:
-  # ==========================================
-  # RHEL ORGANIZATION TEMPLATES
-  # ==========================================
-  - name: "RHEL-Ping-Dev"
-    organization: "RHEL"
-    inventory: "RHEL Inventory"
-    project: "RHEL project"
-    playbook: "linux_ping.yml"
-    credentials: ["RHEL-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "RHEL Dev Survey"
-      description: "Ping parameters for Development"
-      spec:
-        - question_name: "Reason for Ping"
-          variable: "ping_reason"
-          type: "text"
-          required: true
+# controller_templates:
+#   # ==========================================
+#   # RHEL ORGANIZATION TEMPLATES
+#   # ==========================================
+#   - name: "RHEL-Ping-Dev"
+#     organization: "RHEL"
+#     inventory: "RHEL Inventory"
+#     project: "RHEL project"
+#     playbook: "linux_ping.yml"
+#     credentials: ["RHEL-Machine Creds"]
+#     survey_enabled: true
+#     survey_spec:
+#       name: "RHEL Dev Survey"
+#       description: "Ping parameters for Development"
+#       spec:
+#         - question_name: "Reason for Ping"
+#           variable: "ping_reason"
+#           type: "text"
+#           required: true
 
-  - name: "RHEL-Ping-Test"
-    organization: "RHEL"
-    inventory: "RHEL Inventory"
-    project: "RHEL project"
-    playbook: "linux_ping.yml"
-    credentials: ["RHEL-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "RHEL Test Survey"
-      description: "Ping parameters for Testing"
-      spec:
-        - question_name: "Ticket Number"
-          variable: "ticket_id"
-          type: "text"
-          required: true
+#   - name: "RHEL-Ping-Test"
+#     organization: "RHEL"
+#     inventory: "RHEL Inventory"
+#     project: "RHEL project"
+#     playbook: "linux_ping.yml"
+#     credentials: ["RHEL-Machine Creds"]
+#     survey_enabled: true
+#     survey_spec:
+#       name: "RHEL Test Survey"
+#       description: "Ping parameters for Testing"
+#       spec:
+#         - question_name: "Ticket Number"
+#           variable: "ticket_id"
+#           type: "text"
+#           required: true
 
-  - name: "RHEL-Ping-Prod"
-    organization: "RHEL"
-    inventory: "RHEL Inventory"
-    project: "RHEL project"
-    playbook: "linux_ping.yml"
-    credentials: ["RHEL-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "RHEL Prod Survey"
-      description: "CRITICAL: Production Ping"
-      spec:
-        - question_name: "Change Request Number"
-          variable: "cr_number"
-          type: "text"
-          required: true
+#   - name: "RHEL-Ping-Prod"
+#     organization: "RHEL"
+#     inventory: "RHEL Inventory"
+#     project: "RHEL project"
+#     playbook: "linux_ping.yml"
+#     credentials: ["RHEL-Machine Creds"]
+#     survey_enabled: true
+#     survey_spec:
+#       name: "RHEL Prod Survey"
+#       description: "CRITICAL: Production Ping"
+#       spec:
+#         - question_name: "Change Request Number"
+#           variable: "cr_number"
+#           type: "text"
+#           required: true
 
-  # ==========================================
-  # WINDOWS ORGANIZATION TEMPLATES
-  # ==========================================
-  - name: "Windows-Ping-Dev"
-    organization: "Windows"
-    inventory: "Windows Inventory"
-    project: "Windows Project"
-    playbook: "win_ping.yml"
-    credentials: ["Windows-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "Windows Dev Survey"
-      description: "Windows Dev Ping"
-      spec: &win_spec
-        - question_name: "Environment"
-          variable: "target_env"
-          type: "text"
-          default: "Development"
-          required: true
+#   # ==========================================
+#   # WINDOWS ORGANIZATION TEMPLATES
+#   # ==========================================
+#   - name: "Windows-Ping-Dev"
+#     organization: "Windows"
+#     inventory: "Windows Inventory"
+#     project: "Windows Project"
+#     playbook: "win_ping.yml"
+#     credentials: ["Windows-Machine Creds"]
+#     survey_enabled: true
+#     survey_spec:
+#       name: "Windows Dev Survey"
+#       description: "Windows Dev Ping"
+#       spec: &win_spec
+#         - question_name: "Environment"
+#           variable: "target_env"
+#           type: "text"
+#           default: "Development"
+#           required: true
 
-  - name: "Windows-Ping-Test"
-    organization: "Windows"
-    inventory: "Windows Inventory"
-    project: "Windows Project"
-    playbook: "win_ping.yml"
-    credentials: ["Windows-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "Windows Test Survey"
-      description: "Windows Test Ping"
-      spec: *win_spec
+#   - name: "Windows-Ping-Test"
+#     organization: "Windows"
+#     inventory: "Windows Inventory"
+#     project: "Windows Project"
+#     playbook: "win_ping.yml"
+#     credentials: ["Windows-Machine Creds"]
+#     survey_enabled: true
+#     survey_spec:
+#       name: "Windows Test Survey"
+#       description: "Windows Test Ping"
+#       spec: *win_spec
 
-  - name: "Windows-Ping-Prod"
-    organization: "Windows"
-    inventory: "Windows Inventory"
-    project: "Windows Project"
-    playbook: "win_ping.yml"
-    credentials: ["Windows-Machine Creds"]
-    survey_enabled: true
-    survey_spec:
-      name: "Windows Prod Survey"
-      description: "Windows Production Ping"
-      spec: *win_spec
+#   - name: "Windows-Ping-Prod"
+#     organization: "Windows"
+#     inventory: "Windows Inventory"
+#     project: "Windows Project"
+#     playbook: "win_ping.yml"
+#     credentials: ["Windows-Machine Creds"]
+#     survey_enabled: true
+#     survey_spec:
+#       name: "Windows Prod Survey"
+#       description: "Windows Production Ping"
+#       spec: *win_spec
 
-# ==========================================
-# SCHEDULES FOR THE TEMPLATES
-# ==========================================
-controller_schedules:
-  - name: "Daily RHEL Dev Healthcheck"
-    unified_job_template: "RHEL-Ping-Dev"
-    # Added extra_data to satisfy the 'required' survey question
-    extra_data:
-      ping_reason: "Scheduled Daily Healthcheck"
-    rrule: "DTSTART:20260303T000000Z RRULE:FREQ=DAILY;INTERVAL=1"
+# # ==========================================
+# # SCHEDULES FOR THE TEMPLATES
+# # ==========================================
+# controller_schedules:
+#   - name: "Daily RHEL Dev Healthcheck"
+#     unified_job_template: "RHEL-Ping-Dev"
+#     # Added extra_data to satisfy the 'required' survey question
+#     extra_data:
+#       ping_reason: "Scheduled Daily Healthcheck"
+#     rrule: "DTSTART:20260303T000000Z RRULE:FREQ=DAILY;INTERVAL=1"
 
-  - name: "Weekly Windows Prod Audit"
-    unified_job_template: "Windows-Ping-Prod"
-    # Added extra_data to satisfy the 'required' survey question
-    extra_data:
-      target_env: "Production"
-    # Fixed: Added INTERVAL=1 and corrected the RRULE prefix logic
-    rrule: "DTSTART:20260308T000000Z RRULE:FREQ=WEEKLY;BYDAY=SU;INTERVAL=1"
+#   - name: "Weekly Windows Prod Audit"
+#     unified_job_template: "Windows-Ping-Prod"
+#     # Added extra_data to satisfy the 'required' survey question
+#     extra_data:
+#       target_env: "Production"
+#     # Fixed: Added INTERVAL=1 and corrected the RRULE prefix logic
+#     rrule: "DTSTART:20260308T000000Z RRULE:FREQ=WEEKLY;BYDAY=SU;INTERVAL=1"
 
     
-controller_roles:
-  # RHEL Operators get access to all 3 RHEL templates
-  - team: "RHEL-Operator"
-    job_template: "RHEL-Ping-Dev"
-    role: "execute"
-  - team: "RHEL-Operator"
-    job_template: "RHEL-Ping-Test"
-    role: "execute"
-  - team: "RHEL-Operator"
-    job_template: "RHEL-Ping-Prod"
-    role: "execute"
+# controller_roles:
+#   # RHEL Operators get access to all 3 RHEL templates
+#   - team: "RHEL-Operator"
+#     job_template: "RHEL-Ping-Dev"
+#     role: "execute"
+#   - team: "RHEL-Operator"
+#     job_template: "RHEL-Ping-Test"
+#     role: "execute"
+#   - team: "RHEL-Operator"
+#     job_template: "RHEL-Ping-Prod"
+#     role: "execute"
 
-  # Windows Operators get access to all 3 Windows templates
-  - team: "Windows-Operator"
-    job_template: "Windows-Ping-Dev"
-    role: "execute"
-  - team: "Windows-Operator"
-    job_template: "Windows-Ping-Test"
-    role: "execute"
-  - team: "Windows-Operator"
-    job_template: "Windows-Ping-Prod"
-    role: "execute"
+#   # Windows Operators get access to all 3 Windows templates
+#   - team: "Windows-Operator"
+#     job_template: "Windows-Ping-Dev"
+#     role: "execute"
+#   - team: "Windows-Operator"
+#     job_template: "Windows-Ping-Test"
+#     role: "execute"
+#   - team: "Windows-Operator"
+#     job_template: "Windows-Ping-Prod"
+#     role: "execute"
+
+##### Arnold And Porter #####
+
+controller_templates:
+  # --- Job Templates ---
+  - name: "Add ACL-WEBAUTH-REDIRECT to switches"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Add vlan to Meraki WiFi Trunk ports"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "AV-Zoom Vlan deployment"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Bounce phones via CDP"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Cartik_image_Transfer+Remove_inactive"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Cisco local user accounts update"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Cisco SmartNet Collector"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Concepts Testing"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Config_Backup_IOS_NXOS"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "cri-monitor"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Default_Auth_Priority"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Demo Job Template"
+    organization: "Default"
+    project: "Demo Project"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "DHCP-Guard"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "DHCP_Guard_Backout"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Docker hosts"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "get-facts"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "ios-image-deploy"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "ios-image-deploy-debug"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "IOS Update"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "ISR_Image_Transfer"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "ISR_Image_Transfer-us2isrp01"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "ISR_Image_Transfer_us2isrp01"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "L2_Office_VLAN_Deployment"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "linux get facts"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Linux Production | Nightly run do not edit |"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Linux Production - prompt"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Linux Production | test |"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Linux Production - thousand eyes"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Linux Production - us1gc01"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "LogicMonitor SNMPv3 credentials nightly run"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "LogicMonitor SNMPv3 credentials nightly run@9:12:53 AM"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Logic Monitor SNMP Check"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Login Test"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Login-test Console Version"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Netops sync"
+    organization: "Netsos"
+    project: "netops-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Network Segmentation -(Deprecated use workflow / individual jobs instead)"
+    organization: "Default"
+    project: "network-segmentation-automation"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Network Segmentation - IOS"
+    organization: "Default"
+    project: "network-segmentation-automation"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Network Segmentation - ISE"
+    organization: "Default"
+    project: "network-segmentation-automation"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Network Segmentation - Meraki"
+    organization: "Default"
+    project: "network-segmentation-automation"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Network Segmentation - NXOS"
+    organization: "Default"
+    project: "network-segmentation-automation"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Network Segmentation - Panos"
+    organization: "Default"
+    project: "network-segmentation-automation"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Network Segmentation - Panos - DEBUG"
+    organization: "Default"
+    project: "network-segmentation-automation"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "NXOS File Transfer"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Port-channel-job-test"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Reboot 8851 via ssl and cfq"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Remove IOS Files"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Seed Linux ansible-worker"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Service now SNMP creds"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Show command-output"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "SNMP_AS2_SH"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "SNMP_EPLUS"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "SNMP_EPLUS_for_workflow"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "SNMP_LageMonitor_for_Workflow"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "SNMP_ServiceNow_for_Workflow"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "snmpv3 for logic monitor"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Switch Builder test"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Undebug all"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Update and reboot"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Update and reboot prompt"
+    organization: "Default"
+    project: "linux-playbooks"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Upgrade N9K NXOS"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Who routes via US1"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
+
+  - name: "Zoom-Provisioning-Servers"
+    organization: "Default"
+    project: "Default"
+    playbook: "placeholder.yml"
+    inventory: "Default"
+    job_type: "run"
