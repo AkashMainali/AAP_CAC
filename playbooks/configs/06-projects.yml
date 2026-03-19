@@ -4,6 +4,7 @@ controller_projects:
   - name: "Demo Project"
     organization: "Default"
     scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     wait: true
     scm_update_on_launch: true
     scm_clean: true
@@ -12,6 +13,7 @@ controller_projects:
   - name: "linux-inventories"
     organization: "Default"
     scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     wait: true
     scm_update_on_launch: true
     scm_clean: true
@@ -19,6 +21,7 @@ controller_projects:
   - name: "linux-playbooks"
     organization: "Default"
     scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     wait: true
     scm_update_on_launch: true
     scm_clean: true
@@ -27,6 +30,7 @@ controller_projects:
   - name: "netops-inventory"
     organization: "Default"
     scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     wait: true
     scm_update_on_launch: true
     scm_clean: true
@@ -34,6 +38,7 @@ controller_projects:
   - name: "netops-playbooks"
     organization: "Default"
     scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     wait: true
     scm_update_on_launch: true
     scm_clean: true
@@ -41,6 +46,7 @@ controller_projects:
   - name: "network-segmentation-automation"
     organization: "Default"
     scm_type: "git"
+    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
     wait: true
     scm_update_on_launch: true
     scm_clean: true
