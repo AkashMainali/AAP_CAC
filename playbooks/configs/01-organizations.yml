@@ -1,10 +1,31 @@
 ---
+# aap_organizations:
+#   - name: "RHEL"
+#     description: "Red Hat Enterprise Linux Systems"
+
+#   - name: "Windows"
+#     description: "Windows Systems Organization"
+
+#   - name: "Networking"
+#     description: "Networking Systems Organization"
+
 aap_organizations:
-  - name: "RHEL"
-    description: "Red Hat Enterprise Linux Systems"
+  # --- Existing Organizations from Credentials ---
+  - name: "ArnoldPorter"
+    description: "ArnoldPorter Organization"
 
-  - name: "Windows"
-    description: "Windows Systems Organization"
+  - name: "Netsos"
+    description: "Netsos Organization"
 
-  - name: "Networking"
-    description: "Networking Systems Organization"
+  - name: "admin"
+    description: "Admin Organization"
+
+  - name: "DA11438_e"
+    description: "DA11438_e Organization"
+
+  - name: "H21486_e"
+    description: "H21486_e Organization"
+
+  # --- Added for Testing (no organization was specified in credentials) ---
+  - name: "Default"
+    description: "Default Organization for credentials without an organization"
