@@ -15,6 +15,9 @@ aap_organizations:
 
   - name: "H21486_e"
     description: "H21486_e Organization"
+  
+  - name: "Netsos"
+    description: "Netsos Organization"
 
   # --- Added for Testing (no organization was specified in credentials) ---
   - name: "Default"
