@@ -20,5 +20,5 @@ aap_organizations:
     description: "Netsos Organization"
 
   # --- Added for Testing (no organization was specified in credentials) ---
-  - name: "Default"
-    description: "Default Organization for credentials without an organization"
+  # - name: "Default"
+  #   description: "Default Organization for credentials without an organization"
