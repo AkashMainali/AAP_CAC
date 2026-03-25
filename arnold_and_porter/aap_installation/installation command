@@ -1,1 +1,5 @@
+### Visudo entry for ansible user
+# ansible ALL=(ALL)       ALL
+
+### AAP Installation command
 # ansible-playbook -i iis-inventory ansible.containerized_installer.install -b -K --ask-vault-pass
