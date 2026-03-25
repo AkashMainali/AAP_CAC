@@ -1,0 +1,118 @@
+# This is the AAP enterprise installer inventory file
+# Please consult the docs if you're unsure what to add
+# For all optional variables please consult the included README.md
+# or the Red Hat documentation:
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation
+
+[automationcontroller]
+controller-host1                 ansible_host=<ipaddress>
+controller-host2                 ansible_host=<ipaddress>
+controller-host3                 ansible_host=<ipaddress>
+
+[automationhub]
+hub-host                        ansible_host=<ipaddress>
+
+[automationedacontroller]
+eda-host                        ansible_host=<ipaddress>
+
+[automationgateway]
+gateway-host                    ansible_host=<ipaddress>
+
+[automationeda]
+eda-host                        ansible_host=<ipaddress>
+
+[database]
+db-host                         ansible_host=<ipaddress>
+
+
+# This section is for your AAP Lightspeed host(s)
+# -----------------------------------------------------
+# [ansiblelightspeed]
+# lightspeed1.example.org
+# lightspeed2.example.org
+
+# This section is for your Ansible MCP Server host(s)
+# -----------------------------------------------------
+# [ansiblemcp]
+# mcpserver1.example.org
+
+#[redis]
+#gateway1.example.org
+#gateway2.example.org
+#hub1.example.org
+#hub2.example.org
+#eda1.example.org
+#eda2.example.org
+
+[all:vars]
+
+# Common variables
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#ref-general-inventory-variables
+# -----------------------------------------------------
+ignore_preflight_errors=true
+postgresql_admin_username=postgres
+postgresql_admin_password="{{ postgresql_admin_password }}" #vault
+bundle_install=true
+redis_mode=standalone
+# The bundle directory must include /bundle in the path
+bundle_dir='{{ lookup("ansible.builtin.env", "PWD") }}/bundle'
+
+
+# AAP Gateway
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#ref-gateway-variables
+# -----------------------------------------------------
+gateway_admin_password=redhat
+gateway_pg_host=db-host
+gateway_pg_database=automationgateway
+gateway_pg_username=admin
+gateway_pg_password="{{ gateway_pg_password }}" #vault
+
+# AAP Controller
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#ref-controller-variables
+# -----------------------------------------------------
+controller_admin_password=redhat
+controller_pg_host=db-host
+controller_pg_database=awx
+controller_pg_username=admin
+controller_pg_password="{{ controller_pg_password }}" #vault
+
+# AAP Automation Hub
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#ref-hub-variables
+# -----------------------------------------------------
+hub_admin_password=redhat
+hub_pg_host=db_host
+hub_pg_database=automationhub
+hub_pg_username=admin
+hub_pg_password="{{ hub_pg_password }}" #vault
+
+# AAP EDA Controller
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#event-driven-ansible-controller
+# -----------------------------------------------------
+eda_admin_password=redhat
+eda_pg_host=db_host
+eda_pg_database=eda
+eda_pg_username=admin
+eda_pg_password="{{ eda_pg_password }}"  #vault
+
+# AAP Lightspeed
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#ref-lightspeed-variables
+# -----------------------------------------------------
+# lightspeed_admin_password=<set your own>
+# lightspeed_pg_host=externaldb.example.org
+# lightspeed_pg_password=<set your own>
+
+# In case chatbot is enabled, the default provider is "rhoai"
+# lightspeed_chatbot_model_url=<set your own>
+# lightspeed_chatbot_model_api_key=<set your own>
+# lightspeed_chatbot_model_id=<set your own>
+
+# In case "azure" provider
+# lightspeed_chatbot_default_provider = "azure"
+
+# In case "openai" provider
+# lightspeed_chatbot_default_provider = "openai"
+
+# lightspeed_mcp_controller_enabled=true
+# lightspeed_mcp_lightspeed_enabled=true
+# lightspeed_wca_model_api_key=<set your own>
+# lightspeed_wca_model_id=<set your own>
