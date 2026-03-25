@@ -1,52 +1,65 @@
 ---
 controller_projects:
-  # --- Demo Project ---
-  - name: "Demo Project"
-    organization: "Default"
-    scm_type: "git"
-    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
-    wait: false
-    scm_update_on_launch: true
-    scm_clean: true
+  # # --- Demo Project ---
+  # - name: "Demo Project"
+  #   organization: "Default"
+  #   scm_type: "git"
+  #   scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+  #   wait: false
+  #   scm_update_on_launch: true
+  #   scm_clean: true
 
   # --- Linux Projects ---
   - name: "linux-inventories"
-    organization: "Default"
+    organization: "ArnoldPorter"
     scm_type: "git"
-    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    scm_url: "git@us1gitlab01.aplaw.arnoldporter.net:linux-admin/linux-inventories.git"
+    credential: "ust gitlabo1"           # SCM credential name
+    default_environment: "Use Default Environment"           # Ansible environment name
     wait: true
     scm_update_on_launch: true
     scm_clean: true
 
   - name: "linux-playbooks"
-    organization: "Default"
+    organization: "ArnoldPorter"
+    description: "Linux playbooks"
     scm_type: "git"
-    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    scm_url: "git@us1gitlab01.aplaw.arnoldporter.net:linux-admin/linux-playbooks.git"
+    credential: "ust gitlabo1"           # SCM credential name
+    default_environment: "Use Default Environment"           # Ansible environment name
     wait: true
     scm_update_on_launch: true
     scm_clean: true
 
   # --- Netops Projects ---
   - name: "netops-inventory"
-    organization: "Default"
+    organization: "Netops"
+    description: "Nettop's team inventories will be here"
     scm_type: "git"
-    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    scm_url: "git@us1gitlab01.aplaw.arnoldporter.net:Networks/netops-inventory.git"
+    credential: "ust gitlabo1"           # SCM credential name
+    default_environment: "Use Default Environment"           # Ansible environment name
     wait: true
     scm_update_on_launch: true
     scm_clean: true
 
   - name: "netops-playbooks"
-    organization: "Default"
+    organization: "Netops"
     scm_type: "git"
-    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    scm_url: "git@us1gitlab01.aplaw.arnoldporter.net:Networks/netops-playbooks.git"
+    credential: "ust gitlabo1"           # SCM credential name
+    default_environment: "Use Default Environment"           # Ansible environment name
     wait: true
     scm_update_on_launch: true
     scm_clean: true
 
   - name: "network-segmentation-automation"
-    organization: "Default"
+    organization: "Netops"
+    description: "Git repo for the network segmentation automation."
     scm_type: "git"
-    scm_url: "https://github.com/AkashMainali/AAP_CAC.git"
+    scm_url: "git@us1gitlab01.aplaw.arnoldporter.net:Networks/network-segmentation-automation.git"
+    credential: "ust gitlabo1"           # SCM credential name
+    default_environment: "/opt/python-venv/ansible2.18/"           # Ansible environment name
     wait: true
     scm_update_on_launch: true
     scm_clean: true

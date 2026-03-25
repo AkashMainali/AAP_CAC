@@ -4,18 +4,5 @@ aap_organizations:
   - name: "ArnoldPorter"
     description: "ArnoldPorter Organization"
 
-  - name: "Netsos"
-    description: "Netsos Organization"
-
-  - name: "admin"
-    description: "Admin Organization"
-
-  - name: "DA11438_e"
-    description: "DA11438_e Organization"
-
-  - name: "H21486_e"
-    description: "H21486_e Organization"
-
-  # --- Added for Testing (no organization was specified in credentials) ---
-  - name: "Default"
-    description: "Default Organization for credentials without an organization"
+  - name: "Netops"
+    description: "Netops Organization"
