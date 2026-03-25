@@ -5,24 +5,25 @@
 # https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation
 
 [automationcontroller]
-controller-host1                 ansible_host=<ipaddress>
-controller-host2                 ansible_host=<ipaddress>
-controller-host3                 ansible_host=<ipaddress>
+us1ansac01                 ansible_host=10.5.36.71
+us1ansac02                 ansible_host=10.5.36.72
+us1ansac03                 ansible_host=10.5.36.73
+
 
 [automationhub]
-hub-host                        ansible_host=<ipaddress>
+us1ansah01                        ansible_host=10.5.36.74
 
 [automationedacontroller]
-eda-host                        ansible_host=<ipaddress>
+us1ansec01                        ansible_host=10.5.36.76
 
 [automationgateway]
-gateway-host                    ansible_host=<ipaddress>
+us1anspg01                        ansible_host=10.5.36.70
 
 [automationeda]
-eda-host                        ansible_host=<ipaddress>
+us1ansec01                        ansible_host=10.5.36.76
 
 [database]
-db-host                         ansible_host=<ipaddress>
+us1ansdb01                        ansible_host=10.5.36.75
 
 
 # This section is for your AAP Lightspeed host(s)
@@ -61,8 +62,8 @@ bundle_dir='{{ lookup("ansible.builtin.env", "PWD") }}/bundle'
 # AAP Gateway
 # https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#ref-gateway-variables
 # -----------------------------------------------------
-gateway_admin_password=redhat
-gateway_pg_host=db-host
+gateway_admin_password="{{ gateway_admin_password }}"
+gateway_pg_host=us1ansdb01
 gateway_pg_database=automationgateway
 gateway_pg_username=admin
 gateway_pg_password="{{ gateway_pg_password }}" #vault
@@ -70,8 +71,8 @@ gateway_pg_password="{{ gateway_pg_password }}" #vault
 # AAP Controller
 # https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#ref-controller-variables
 # -----------------------------------------------------
-controller_admin_password=redhat
-controller_pg_host=db-host
+controller_admin_password="{{ controller_admin_password }}"
+controller_pg_host=us1ansdb01
 controller_pg_database=awx
 controller_pg_username=admin
 controller_pg_password="{{ controller_pg_password }}" #vault
@@ -79,8 +80,8 @@ controller_pg_password="{{ controller_pg_password }}" #vault
 # AAP Automation Hub
 # https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#ref-hub-variables
 # -----------------------------------------------------
-hub_admin_password=redhat
-hub_pg_host=db_host
+hub_admin_password="{{ hub_admin_password }}"
+hub_pg_host=us1ansdb01
 hub_pg_database=automationhub
 hub_pg_username=admin
 hub_pg_password="{{ hub_pg_password }}" #vault
@@ -88,8 +89,8 @@ hub_pg_password="{{ hub_pg_password }}" #vault
 # AAP EDA Controller
 # https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/html/containerized_installation/appendix-inventory-files-vars#event-driven-ansible-controller
 # -----------------------------------------------------
-eda_admin_password=redhat
-eda_pg_host=db_host
+eda_admin_password="{{ eda_admin_password }}"
+eda_pg_host=us1ansdb01
 eda_pg_database=eda
 eda_pg_username=admin
 eda_pg_password="{{ eda_pg_password }}"  #vault
